@@ -1,0 +1,75 @@
+@{
+    ViewData["Title"] = "Student Home";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p> Clock in your attendance</a>.</p>
+
+    <!-- Hidden form that passes the location -->
+    <!-- Whichever action we save the location to in "asp-action="""-->
+    <form id="geoForm" asp-controller="Student" asp-action="" method="post">
+        <input type="hidden" id="latitude" name="latitude" />
+        <input type="hidden" id="longitude" name="longitude" />
+    </form>
+    <!-- button click to clock in attendance -->
+    <button onclick="clockInAndLocate()">Clock In</button>
+    <!--button cliclk to clock out attendance -->
+    <button onclick="clockOutAndLocate()">Clock Out</button>
+    <!-- director button to students clock history -->
+    <button onclick="window.location.href='/Student/AttendanceHistory'">View Attendance History</button>
+</div>
+
+<script src="~/js/cookie-test.js"></script>
+<script>
+
+function clockInAndLocate() {
+    alert('Attendance Clocked In!');
+    getLocation();
+}
+
+function clockOutAndLocate() {
+    alert('Attendance Clocked Out!');
+    getLocation();
+}
+
+function getLocation() {
+    //Check if geolocation is supported
+    if (!navigator.geolocation) {
+        alert('Geolocation is not supported by your browser');
+        return;
+    }
+
+    //Get the current position
+    navigator.geolocation.getCurrentPosition(success, error, {
+        enableHighAccuracy: true, //Gets a more accurate location
+        timeout: 10000, //Will fail if it takes longer than 10 seconds
+        maximumAge: 0
+    });
+}
+
+function success(position) {
+    const latitude  = position.coords.latitude;
+    const longitude = position.coords.longitude;
+
+    //Prints location to dev tools (Ctrl + Shift + I on Chrome and Ctrl + Shift + K on Firefox)
+    console.log('Latitude is ' + latitude, 'Longitude is ' + longitude);
+
+    // Fill the values in the geoForm form
+    document.getElementById('latitude').value = latitude;
+    document.getElementById('longitude').value = longitude;
+
+    //For testing, remove later (Or keep it doesn't impact anything)
+    alert('Location retrieved: Latitude ' + latitude + ', Longitude ' + longitude);
+
+    // Submit the form
+    document.getElementById('geoForm').submit();
+
+    //Add the portion to submit the form to the controller
+
+}
+
+function error(err) {
+    alert('Unable to retrieve your location');
+}
+</script>

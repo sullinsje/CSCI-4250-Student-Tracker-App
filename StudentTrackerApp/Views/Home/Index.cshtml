@@ -1,0 +1,38 @@
+@{
+    ViewData["Title"] = "Home";
+}
+
+<div class="row justify-content-center">
+    <div class="col-12 text-center mb-5">
+        <h1 class="display-4 text-white fw-bold mb-3">Welcome to the Student Tracker!</h1>
+        <p class="lead text-white">Please select your portal to continue</p>
+    </div>
+</div>
+
+<div class="row g-4 justify-content-center">
+    <!-- Student Portal -->
+    <div class="col-md-5 col-lg-4">
+        <div class="portal-card student-portal">
+            <div class="portal-icon">
+                <i class="bi bi-person-fill"></i>
+            </div>
+            <h2 class="mb-3">Student Tracker</h2>
+            <a href="/Student/Login" class="btn btn-primary portal-btn">
+                Student Login <i class="bi bi-arrow-right ms-2"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- Teacher Portal -->
+    <div class="col-md-5 col-lg-4">
+        <div class="portal-card teacher-portal">
+            <div class="portal-icon">
+                <i class="bi bi-person-badge-fill"></i>
+            </div>
+            <h2 class="mb-3">Teacher Portal</h2>
+            <a href="/Teacher/Login" class="btn btn-danger portal-btn">
+                Teacher Login <i class="bi bi-arrow-right ms-2"></i>
+            </a>
+        </div>
+    </div>
+</div>
