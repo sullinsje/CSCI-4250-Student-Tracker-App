@@ -1,75 +1,257 @@
 @{
-    ViewData["Title"] = "Student Home";
+    ViewData["Title"] = "Clock In";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p> Clock in your attendance</a>.</p>
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="text-center">
+                <h1 class="display-4 text-white fw-bold mb-2">
+                    <i class="bi bi-clock-history me-2"></i>Attendance Clock
+                </h1>
+                <p class="lead text-white">Record your attendance with your current location</p>
+            </div>
+        </div>
+    </div>
 
-    <!-- Hidden form that passes the location -->
-    <!-- Whichever action we save the location to in "asp-action="""-->
-    <form id="geoForm" asp-controller="Student" asp-action="" method="post">
-        <input type="hidden" id="latitude" name="latitude" />
-        <input type="hidden" id="longitude" name="longitude" />
-    </form>
-    <!-- button click to clock in attendance -->
-    <button onclick="clockInAndLocate()">Clock In</button>
-    <!--button cliclk to clock out attendance -->
-    <button onclick="clockOutAndLocate()">Clock Out</button>
-    <!-- director button to students clock history -->
-    <button onclick="window.location.href='/Student/AttendanceHistory'">View Attendance History</button>
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i>@TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+            
+            <div class="clock-card">
+                <!-- Hidden form that passes the location -->
+                <form id="geoForm" asp-controller="Student" asp-action="RecordAttendance" method="post">
+                    <input type="hidden" id="latitude" name="latitude" />
+                    <input type="hidden" id="longitude" name="longitude" />
+                    <input type="hidden" id="clockType" name="clockType" value="in" />
+                </form>
+
+                <div class="row g-4 mb-4">
+                    <!-- Clock In Card -->
+                    <div class="col-md-6">
+                        <div class="action-card clock-in-card">
+                            <div class="action-icon">
+                                <i class="bi bi-arrow-right-circle-fill"></i>
+                            </div>
+                            <h3 class="fw-bold mb-3">Clock In</h3>
+                            <p class="text-muted mb-4">Record your arrival time and location</p>
+                            <button class="btn btn-success btn-lg w-100 action-btn" onclick="clockInAndLocate()">
+                                <i class="bi bi-play-circle me-2"></i>Clock In Now
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Clock Out Card -->
+                    <div class="col-md-6">
+                        <div class="action-card clock-out-card">
+                            <div class="action-icon">
+                                <i class="bi bi-arrow-left-circle-fill"></i>
+                            </div>
+                            <h3 class="fw-bold mb-3">Clock Out</h3>
+                            <p class="text-muted mb-4">Record your departure time and location</p>
+                            <button class="btn btn-danger btn-lg w-100 action-btn" onclick="clockOutAndLocate()">
+                                <i class="bi bi-stop-circle me-2"></i>Clock Out Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="my-4">
+
+                <div class="text-center">
+                    <a href="/Student/AttendanceHistory" class="btn btn-outline-primary btn-lg me-2">
+                        <i class="bi bi-calendar-check me-2"></i>View Attendance History
+                    </a>
+                    <a href="/Student/Dashboard" class="btn btn-outline-secondary btn-lg">
+                        <i class="bi bi-arrow-left me-2"></i>Back to Dashboard
+                    </a>
+                </div>
+
+                <!-- Location Status -->
+                <div id="locationStatus" class="alert alert-info mt-4" style="display: none;">
+                    <i class="bi bi-info-circle me-2"></i>
+                    <span id="statusMessage"></span>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
-<script src="~/js/cookie-test.js"></script>
-<script>
+@section Styles {
+    <style>
+        body {
+            background: linear-gradient(135deg, #4a90e2 0%, #2c5aa0 100%);
+            min-height: 100vh;
+        }
 
-function clockInAndLocate() {
-    alert('Attendance Clocked In!');
-    getLocation();
+        .clock-card {
+            background: white;
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .action-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            height: 100%;
+        }
+
+        .action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .clock-in-card:hover {
+            border-color: #28a745;
+            background: #f0fdf4;
+        }
+
+        .clock-out-card:hover {
+            border-color: #dc3545;
+            background: #fef2f2;
+        }
+
+        .action-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .clock-in-card .action-icon {
+            color: #28a745;
+        }
+
+        .clock-out-card .action-icon {
+            color: #dc3545;
+        }
+
+        .action-btn {
+            padding: 0.75rem 1.5rem;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-outline-primary,
+        .btn-outline-secondary {
+            border-radius: 50px;
+            padding: 0.75rem 2rem;
+            border-width: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-primary {
+            color: #4a90e2;
+            border-color: #4a90e2;
+        }
+
+        .btn-outline-primary:hover {
+            background-color: #4a90e2;
+            border-color: #4a90e2;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline-secondary:hover {
+            transform: translateY(-2px);
+        }
+
+        #locationStatus {
+            border-radius: 10px;
+            border-left: 4px solid #0dcaf0;
+        }
+
+        .alert-success {
+            border-radius: 15px;
+            border: none;
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.2);
+        }
+    </style>
 }
 
-function clockOutAndLocate() {
-    alert('Attendance Clocked Out!');
-    getLocation();
+@section Scripts {
+    <script src="~/js/cookie-test.js"></script>
+    <script>
+        function showStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('locationStatus');
+            const statusMessage = document.getElementById('statusMessage');
+            
+            statusDiv.className = `alert alert-${type} mt-4`;
+            statusMessage.textContent = message;
+            statusDiv.style.display = 'block';
+            
+            // Hide after 5 seconds
+            setTimeout(() => {
+                statusDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        function clockInAndLocate() {
+            document.getElementById('clockType').value = 'in';
+            showStatus('Getting your location...', 'info');
+            getLocation();
+        }
+
+        function clockOutAndLocate() {
+            document.getElementById('clockType').value = 'out';
+            showStatus('Getting your location...', 'info');
+            getLocation();
+        }
+
+        function getLocation() {
+            // Check if geolocation is supported
+            if (!navigator.geolocation) {
+                showStatus('Geolocation is not supported by your browser', 'danger');
+                return;
+            }
+
+            // Get the current position
+            navigator.geolocation.getCurrentPosition(success, error, {
+                enableHighAccuracy: true, // Gets a more accurate location
+                timeout: 10000, // Will fail if it takes longer than 10 seconds
+                maximumAge: 0
+            });
+        }
+
+        function success(position) {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+
+            // Prints location to dev tools
+            console.log('Latitude is ' + latitude, 'Longitude is ' + longitude);
+
+            // Fill the values in the geoForm form
+            document.getElementById('latitude').value = latitude;
+            document.getElementById('longitude').value = longitude;
+
+            // Show success message
+            showStatus(`Location retrieved: ${latitude.toFixed(6)}, ${longitude.toFixed(6)}`, 'success');
+
+            // Submit the form after a brief delay
+            setTimeout(() => {
+                document.getElementById('geoForm').submit();
+            }, 1000);
+        }
+
+        function error(err) {
+            showStatus('Unable to retrieve your location. Please check your location permissions.', 'danger');
+            console.error('Geolocation error:', err);
+        }
+    </script>
 }
-
-function getLocation() {
-    //Check if geolocation is supported
-    if (!navigator.geolocation) {
-        alert('Geolocation is not supported by your browser');
-        return;
-    }
-
-    //Get the current position
-    navigator.geolocation.getCurrentPosition(success, error, {
-        enableHighAccuracy: true, //Gets a more accurate location
-        timeout: 10000, //Will fail if it takes longer than 10 seconds
-        maximumAge: 0
-    });
-}
-
-function success(position) {
-    const latitude  = position.coords.latitude;
-    const longitude = position.coords.longitude;
-
-    //Prints location to dev tools (Ctrl + Shift + I on Chrome and Ctrl + Shift + K on Firefox)
-    console.log('Latitude is ' + latitude, 'Longitude is ' + longitude);
-
-    // Fill the values in the geoForm form
-    document.getElementById('latitude').value = latitude;
-    document.getElementById('longitude').value = longitude;
-
-    //For testing, remove later (Or keep it doesn't impact anything)
-    alert('Location retrieved: Latitude ' + latitude + ', Longitude ' + longitude);
-
-    // Submit the form
-    document.getElementById('geoForm').submit();
-
-    //Add the portion to submit the form to the controller
-
-}
-
-function error(err) {
-    alert('Unable to retrieve your location');
-}
-</script>

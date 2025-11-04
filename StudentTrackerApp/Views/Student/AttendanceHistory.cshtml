@@ -1,24 +1,154 @@
+@model List<StudentTrackerApp.Models.Attendance>
 @{
-    ViewData["Title"] = "attendance History";
+    ViewData["Title"] = "Attendance History";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <!-- display attendance history pulled from database -->
-    <p>Your attendance history will be displayed here.</p>
-    <!-- pull attendance history from database and display in a table -->
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="display-5 text-white fw-bold mb-2">
+                        <i class="bi bi-calendar-check me-2"></i>Attendance History
+                    </h1>
+                    <p class="text-white-50">View your complete attendance records</p>
+                </div>
+                <a href="/Student/Dashboard" class="btn btn-light">
+                    <i class="bi bi-arrow-left me-2"></i>Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
 
-    <!-- add a location data to attendance history table based on the data in the db that 
-    will be pulled from google maps api -->
-    
-    <!-- table to display attendance history -->
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Student ID</th>
-                <th>Date</th>
-                <th>Clock In Time</th>
-                <th>Clock Out Time</th>
-                <th>Location</th>
-            </tr>
+    <div class="row">
+        <div class="col-12">
+            <div class="table-card">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col"><i class="bi bi-person-badge me-2"></i>Student ID</th>
+                                <th scope="col"><i class="bi bi-calendar-event me-2"></i>Date</th>
+                                <th scope="col"><i class="bi bi-clock me-2"></i>Clock-In Time</th>
+                                <th scope="col"><i class="bi bi-geo-alt me-2"></i>Location</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model != null && Model.Any())
+                            {
+                                @foreach (var attendance in Model)
+                                {
+                                    <tr>
+                                        <td class="fw-semibold">@attendance.StudentId</td>
+                                        <td>@attendance.Date.ToString("MMM dd, yyyy")</td>
+                                        <td>@attendance.ClockInTime.ToString(@"hh\:mm\:ss")</td>
+                                        <td>
+                                            <a href="https://www.google.com/maps?q=@attendance.Latitude,@attendance.Longitude" 
+                                               target="_blank" 
+                                               class="text-decoration-none"
+                                               title="View on Google Maps">
+                                                <i class="bi bi-pin-map-fill me-1"></i>@attendance.Location
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr class="empty-row">
+                                    <td colspan="4" class="text-center text-muted py-5">
+                                        <i class="bi bi-inbox fs-1 d-block mb-3"></i>
+                                        <p class="mb-0">No attendance records yet. Clock in to start tracking your attendance!</p>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                @if (Model != null && Model.Any())
+                {
+                    <div class="table-footer">
+                        <div class="text-muted">
+                            <i class="bi bi-info-circle me-2"></i>Total Records: <strong>@Model.Count</strong>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
 </div>
+
+@section Styles {
+    <style>
+        body {
+            background: linear-gradient(135deg, #4a90e2 0%, #2c5aa0 100%);
+            min-height: 100vh;
+        }
+
+        .table-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            overflow: hidden;
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+            color: white;
+        }
+
+        thead th {
+            border: none;
+            padding: 1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.875rem;
+            letter-spacing: 0.5px;
+        }
+
+        tbody tr {
+            transition: all 0.2s ease;
+        }
+
+        tbody tr:hover {
+            background-color: #f8f9fa;
+            transform: scale(1.01);
+        }
+
+        tbody td {
+            padding: 1rem;
+            vertical-align: middle;
+            border-color: #e9ecef;
+        }
+
+        .empty-row:hover {
+            background-color: white !important;
+            transform: none !important;
+        }
+
+        .table-footer {
+            padding: 1rem 1.5rem;
+            background-color: #f8f9fa;
+            border-top: 1px solid #dee2e6;
+        }
+
+        .btn-light {
+            background-color: white;
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-light:hover {
+            background-color: #f8f9fa;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+    </style>
+}
