@@ -2,7 +2,7 @@
 
 @{
     var roleName = ViewData["UserRole"] as string ?? "User";
-    
+
     // Set the dynamic title
     ViewData["Title"] = ViewData["Title"] ?? $"{roleName} Login";
 
@@ -25,12 +25,12 @@
     var iconClass = roleName.ToLower() switch
     {
         "student" => "bi-person-circle student-icon",
-        "teacher" => "bi-person-badge-fill teacher-icon", 
-        "admin" => "bi-shield-lock-fill admin-icon",     
+        "teacher" => "bi-person-badge-fill teacher-icon",
+        "admin" => "bi-shield-lock-fill admin-icon",
         _ => "bi-person-circle user-icon"
     };
-    var iconName = iconClass.Split(' ')[0]; 
-    var iconColorClass = iconClass.Split(' ')[1]; 
+    var iconName = iconClass.Split(' ')[0];
+    var iconColorClass = iconClass.Split(' ')[1];
 }
 
 <div class="row justify-content-center align-items-center min-vh-100">
@@ -45,7 +45,7 @@
             </div>
 
             <form method="post" asp-action="Login" asp-controller="Auth">
-                
+                <input type="hidden" name="RoleName" value="@roleName" />
                 <div asp-validation-summary="All" class="text-danger mb-3"></div>
 
                 @if (ViewBag.Error != null)
@@ -72,7 +72,8 @@
                         <span class="input-group-text">
                             <i class="bi bi-lock"></i>
                         </span>
-                        <input type="password" asp-for="Password" class="form-control" placeholder="Enter your password" required>
+                        <input type="password" asp-for="Password" class="form-control" placeholder="Enter your password"
+                            required>
                     </div>
                     <span asp-validation-for="Password" class="text-danger"></span>
                 </div>
@@ -89,10 +90,8 @@
                 </button>
 
                 <div class="text-center mt-3">
-                    <a asp-action="Register" 
-                       asp-controller="Auth" 
-                       asp-route-roleName="@roleName.ToLower()"
-                       class="text-muted text-decoration-none d-block mb-2">
+                    <a asp-action="Register" asp-controller="Auth" asp-route-roleName="@roleName.ToLower()"
+                        class="text-muted text-decoration-none d-block mb-2">
                         Need an account? Register Here
                     </a>
                     <a href="/" class="text-muted text-decoration-none">
@@ -115,7 +114,7 @@
             background: white;
             border-radius: 20px;
             padding: 2.5rem;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
         }
 
         .login-icon {
@@ -123,15 +122,16 @@
             margin-bottom: 1rem;
         }
 
-        /* Define colors for all roles, expanding upon the base student style */
         .student-icon {
-            color: #4a90e2; 
+            color: #4a90e2;
         }
+
         .teacher-icon {
-            color: #e74c3c; 
+            color: #e74c3c;
         }
+
         .admin-icon {
-            color: #800000; 
+            color: #800000;
         }
 
         .input-group-text {

@@ -1,13 +1,10 @@
 @model RegisterModel
 
 @{
-    // Retrieve the current roleName from the model
     string userRole = Model.RoleName ?? "User";
 
-    // Set the dynamic title
     ViewData["Title"] = ViewData["Title"] ?? $"{userRole} Registration";
 
-    // Determine the icon and color class dynamically
     var iconClass = userRole.ToLower() switch
     {
         "student" => "bi-person-circle student-icon",
@@ -32,7 +29,6 @@
 
             <form method="post" asp-action="Register" asp-controller="Auth" asp-route-roleName="@Model.RoleName">
 
-                @* Display Validation Errors *@
                 <div asp-validation-summary="All" class="text-danger mb-3"></div>
                 <input type="hidden" asp-for="RoleName" />
 
@@ -86,7 +82,7 @@
 @section Styles {
     <style>
         body {
-            background: linear-gradient(135deg, #5cb85c 0%, #3e8f3e 100%);
+            background: linear-gradient(135deg, #4a90e2 0%, #2c5aa0 100%);
             min-height: 100vh;
         }
 
@@ -120,8 +116,8 @@
         }
 
         .form-control:focus {
-            border-color: #5cb85c;
-            box-shadow: 0 0 0 0.2rem rgba(92, 184, 92, 0.25);
+            border-color: #4a90e2;
+            box-shadow: 0 0 0 0.2rem rgba(74, 144, 226, 0.25);
         }
 
         .login-btn,
@@ -132,31 +128,22 @@
             transition: all 0.3s ease;
         }
 
-        .login-btn {
-            background-color: #28a745;
-        }
-
         .btn-success {
             background-color: #28a745;
         }
 
-        .login-btn:hover {
-            background-color: #3e8f3e;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(92, 184, 92, 0.3);
-        }
-
+        .login-btn:hover,
         .btn-success:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
         }
 
         a {
-            color: #5cb85c;
+            color: #4a90e2;
         }
 
         a:hover {
-            color: #3e8f3e;
+            color: #357abd;
         }
     </style>
 }

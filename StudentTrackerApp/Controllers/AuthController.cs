@@ -33,7 +33,6 @@ public class AuthController : Controller
     {
         ViewData["ReturnUrl"] = returnUrl;
         ViewData["UserRole"] = "Student"; // Used for view logic or messaging
-        ViewData["RoleColors"] = ColorMapping.RoleColorMap["Student"];
         return View("Login"); // Load the generic Login.cshtml view
     }
 
@@ -42,7 +41,6 @@ public class AuthController : Controller
     {
         ViewData["ReturnUrl"] = returnUrl;
         ViewData["UserRole"] = "Teacher";
-        ViewData["RoleColors"] = ColorMapping.RoleColorMap["Teacher"];
         return View("Login"); // Load the generic Login.cshtml view
     }
 
