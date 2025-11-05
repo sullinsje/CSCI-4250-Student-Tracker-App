@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace StudentTrackerAPI.Models 
+namespace StudentTrackerApp.Models 
 {
     public class LoginModel
     {
@@ -11,6 +11,10 @@ namespace StudentTrackerAPI.Models
         [Required]
         [DataType(DataType.Password)]
         public string Password { get; set; } = String.Empty;
+
+        public bool RememberMe { get; set; } = false;
         
-    }
+        [Required]
+        public string RoleName { get; set; } = string.Empty;
+        }
 }
