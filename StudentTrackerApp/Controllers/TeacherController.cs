@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using StudentTrackerApp.Models.Entities;
 
 namespace StudentTracker.Controllers;
 
@@ -17,10 +18,42 @@ public class TeacherController : Controller
         return View();
     }
 
+    public IActionResult Dashboard()
+    {
+        return View();
+    }
+
     public IActionResult StudentList()
     {
-        //var data = _dbContext.AttendanceRecords.ToList();
-        return View();
+          var sampleStudents = new List<Student>
+            {
+                new Student
+                {
+                    id = 12345,
+                    name= "John Smith",
+                },
+                new Student
+                {
+                    id = 12346,
+                    name = "Emily Johnson",
+                },
+                new Student
+                {
+                    id = 12347,
+                    name = "Michael Brown",
+                },
+                new Student
+                {
+                    id = 12348,
+                    name = "Sarah Davis",
+                },
+                new Student
+                {
+                    id = 12349,
+                    name = "James Wilson",
+                }
+            };
+        return View(sampleStudents);
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
