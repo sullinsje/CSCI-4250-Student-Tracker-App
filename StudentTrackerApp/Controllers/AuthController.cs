@@ -141,9 +141,9 @@ public class AuthController : Controller
                 if (model.RoleName == "Admin")
                     return RedirectToAction("Dashboard", "Admin");
                 else if (model.RoleName == "Teacher")
-                    return RedirectToAction("Teacher", "Teacher");
+                    return RedirectToAction("Dashboard", "Teacher");
                 else
-                    return RedirectToAction("Student", "Student");
+                    return RedirectToAction("Dashboard", "Student");
             }
 
             foreach (var error in result.Errors)
