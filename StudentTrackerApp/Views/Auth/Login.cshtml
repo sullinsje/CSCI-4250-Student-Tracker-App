@@ -1,0 +1,176 @@
+@model LoginModel
+
+@{
+    var roleName = ViewData["UserRole"] as string ?? "User";
+    
+    // Set the dynamic title
+    ViewData["Title"] = ViewData["Title"] ?? $"{roleName} Login";
+
+    var idLabel = roleName switch
+    {
+        "Student" => "Student ID",
+        "Teacher" => "Teacher ID",
+        "Admin" => "Username",
+        _ => "User ID"
+    };
+
+    var idPlaceholder = roleName switch
+    {
+        "Student" => $"Enter your {roleName} ID",
+        "Teacher" => $"Enter your {roleName} ID",
+        "Admin" => "Enter your username",
+        _ => $"Enter your {roleName} ID"
+    };
+
+    var iconClass = roleName.ToLower() switch
+    {
+        "student" => "bi-person-circle student-icon",
+        "teacher" => "bi-person-badge-fill teacher-icon", 
+        "admin" => "bi-shield-lock-fill admin-icon",     
+        _ => "bi-person-circle user-icon"
+    };
+    var iconName = iconClass.Split(' ')[0]; 
+    var iconColorClass = iconClass.Split(' ')[1]; 
+}
+
+<div class="row justify-content-center align-items-center min-vh-100">
+    <div class="col-md-5 col-lg-4">
+        <div class="login-card">
+            <div class="text-center mb-4">
+                <div class="login-icon @iconColorClass">
+                    <i class="bi @iconName"></i>
+                </div>
+                <h2 class="fw-bold">@roleName Login</h2>
+                <p class="text-muted">Access your @roleName.ToLower() portal</p>
+            </div>
+
+            <form method="post" asp-action="Login" asp-controller="Auth">
+                
+                <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+                @if (ViewBag.Error != null)
+                {
+                    <div class="alert alert-danger" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>@ViewBag.Error
+                    </div>
+                }
+
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label">@idLabel</label>
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="bi bi-person-vcard"></i>
+                        </span>
+                        <input asp-for="Email" type="text" class="form-control" placeholder="@idPlaceholder" required>
+                    </div>
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Password" class="form-label">Password</label>
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="bi bi-lock"></i>
+                        </span>
+                        <input type="password" asp-for="Password" class="form-control" placeholder="Enter your password" required>
+                    </div>
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3 form-check">
+                    <input type="checkbox" asp-for="RememberMe" class="form-check-input">
+                    <label class="form-check-label" asp-for="RememberMe">
+                        Remember me
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 login-btn mb-3">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>Login
+                </button>
+
+                <div class="text-center mt-3">
+                    <a asp-action="Register" 
+                       asp-controller="Auth" 
+                       asp-route-roleName="@roleName.ToLower()"
+                       class="text-muted text-decoration-none d-block mb-2">
+                        Need an account? Register Here
+                    </a>
+                    <a href="/" class="text-muted text-decoration-none">
+                        <i class="bi bi-arrow-left me-1"></i>Back to Home
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        body {
+            background: linear-gradient(135deg, #4a90e2 0%, #2c5aa0 100%);
+            min-height: 100vh;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .login-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Define colors for all roles, expanding upon the base student style */
+        .student-icon {
+            color: #4a90e2; 
+        }
+        .teacher-icon {
+            color: #e74c3c; 
+        }
+        .admin-icon {
+            color: #800000; 
+        }
+
+        .input-group-text {
+            background-color: #f8f9fa;
+            border-right: none;
+        }
+
+        .form-control:focus {
+            border-color: #4a90e2;
+            box-shadow: 0 0 0 0.2rem rgba(74, 144, 226, 0.25);
+        }
+
+        .login-btn {
+            padding: 0.75rem;
+            font-size: 1.1rem;
+            background-color: #4a90e2;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .login-btn:hover {
+            background-color: #357abd;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(74, 144, 226, 0.3);
+        }
+
+        a {
+            color: #4a90e2;
+        }
+
+        a:hover {
+            color: #357abd;
+        }
+    </style>
+}
+
+@section Scripts {
+    @{
+        // Enables client-side validation using unobtrusive JavaScript
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

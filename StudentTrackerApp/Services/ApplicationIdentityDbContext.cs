@@ -10,8 +10,6 @@ public class ApplicationIdentityDbContext : IdentityDbContext<ApplicationUser>
     {
 
     }
-    
-
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

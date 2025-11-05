@@ -1,16 +1,21 @@
+@model LoginModel
+
 @{
-    ViewData["Title"] = "Teacher Login";
+    string role = ViewData["UserRole"]?.ToString() ?? "Student";
+    ViewData["Title"] = $"{role} Login";
+    string loginIcon = role == "Student" ? "student-icon" : "teacher-icon";
+    string loginClass = role == "Student" ? "bi-person-circle" : "bi-person-badge-fill";
 }
 
 <div class="row justify-content-center align-items-center min-vh-100">
     <div class="col-md-5 col-lg-4">
         <div class="login-card">
             <div class="text-center mb-4">
-                <div class="login-icon teacher-icon">
-                    <i class="bi bi-person-badge-fill"></i>
+                <div class="@loginIcon">
+                    <i class="bi @loginClass"></i>
                 </div>
-                <h2 class="fw-bold">Teacher Login</h2>
-                <p class="text-muted">Access your teacher portal</p>
+                <h2 class="fw-bold">@role Login</h2>
+                <p class="text-muted">Access your @role.ToLower() portal</p>
             </div>
 
             <form method="post" asp-action="Login" asp-controller="Teacher">

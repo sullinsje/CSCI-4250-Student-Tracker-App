@@ -1,14 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using StudentTrackerApp.Services;
-using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
-
+    
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
-// allows the frontend app running on localhost:5264 to access this API
-// we have to allow credentials so that browser will send the identity cookie
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: MyAllowSpecificOrigins,
@@ -23,9 +20,8 @@ builder.Services.AddCors(options =>
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddOpenApiDocument();
 builder.Services.AddScoped<IStudentRepository, DbStudentRepository>();
-// builder.Services.AddScoped<IUserRepository, DbUserRepository>();
+builder.Services.AddScoped<IUserRepository, DbUserRepository>();
 
 // DbContext Configuration
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -39,18 +35,22 @@ builder.Services.AddDbContext<ApplicationIdentityDbContext>(options =>
             builder.Configuration.GetConnectionString("DefaultConnection"))
 );
 
+builder.Services
+    .AddDefaultIdentity<ApplicationUser>(
+        options => options.SignIn.RequireConfirmedAccount = false)
+    .AddRoles<IdentityRole>()
+    .AddEntityFrameworkStores<ApplicationIdentityDbContext>();
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddOpenApiDocument();
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    // Add OpenAPI 3.0 document serving middleware
-    // Available at: http://localhost:<port>/swagger/v1/swagger.json
     app.UseOpenApi();
-
-    // Add web UIs to interact with the document
-    // Available at: http://localhost:<port>/swagger
-    app.UseSwaggerUi(); // UseSwaggerUI Protected by if (env.IsDevelopment())
+    app.UseSwaggerUi(); 
 }
 
 // Configure the HTTP request pipeline.
@@ -61,7 +61,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-// app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthentication();
 app.UseCors(MyAllowSpecificOrigins);
@@ -74,5 +74,26 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
+await CreateRoles(app.Services);
 
 app.Run();
+
+async Task CreateRoles(IServiceProvider serviceProvider)
+{
+    using (var scope = serviceProvider.CreateScope())
+    {
+        var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+        string[] roleNames = { "Admin", "Teacher", "Student" };
+        
+        foreach (var roleName in roleNames)
+        {
+            if (!await roleManager.RoleExistsAsync(roleName))
+            {
+                await roleManager.CreateAsync(new IdentityRole(roleName));
+                System.Diagnostics.Debug.WriteLine($"Created Role: {roleName}");
+            }
+        }
+
+    }
+}
