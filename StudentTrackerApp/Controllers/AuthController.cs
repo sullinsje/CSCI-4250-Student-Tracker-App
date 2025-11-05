@@ -85,9 +85,9 @@ public class AuthController : Controller
                 if (await _userManager.IsInRoleAsync(user, "Admin"))
                     return RedirectToAction("Dashboard", "Admin");
                 else if (await _userManager.IsInRoleAsync(user, "Teacher"))
-                    return RedirectToAction("Teacher", "Teacher");
+                    return RedirectToAction("Dashboard", "Teacher");
                 else 
-                    return RedirectToAction("Student", "Student");
+                    return RedirectToAction("Dashboard", "Student");
             }
 
             return LocalRedirect(returnUrl ?? "/");
