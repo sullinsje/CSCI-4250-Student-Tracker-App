@@ -55,7 +55,7 @@ public class AuthController : Controller
     #endregion
 
     [HttpPost("login")]
-    [ValidateAntiForgeryToken] 
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(LoginModel model, string? returnUrl = null)
     {
         // Add checks for the Remember Me checkbox data
@@ -81,12 +81,12 @@ public class AuthController : Controller
 
             if (user != null)
             {
-                
+
                 if (await _userManager.IsInRoleAsync(user, "Admin"))
                     return RedirectToAction("Dashboard", "Admin");
                 else if (await _userManager.IsInRoleAsync(user, "Teacher"))
                     return RedirectToAction("Dashboard", "Teacher");
-                else 
+                else
                     return RedirectToAction("Dashboard", "Student");
             }
 
@@ -154,5 +154,20 @@ public class AuthController : Controller
 
         return View(model);
     }
+
+    public async Task<IActionResult> Logout()
+    {
+        return View();
+    }
+
+    [HttpPost("logout")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> PerformLogout()
+    {
+        await _signInManager.SignOutAsync();
+        return RedirectToAction("Index", "Home");
+    }
+
+
     #endregion
 }
