@@ -1,8 +1,10 @@
 using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace StudentTracker.Controllers;
 
+[Authorize(Roles = "Teacher")]
 public class TeacherController : Controller
 {
     private readonly ILogger<TeacherController> _logger;
@@ -34,7 +36,7 @@ public class TeacherController : Controller
     {
         return View();
     }
-    
+
     // public IActionResult Error()
     // {
     //     return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
