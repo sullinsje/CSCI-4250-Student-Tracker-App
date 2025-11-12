@@ -113,9 +113,9 @@ public class AuthController : Controller
         return View(model);
     }
 
-    [HttpPost("register/{roleName}")]
+    [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Register(RegisterModel model)
+    public async Task<IActionResult> PerformRegister(RegisterModel model)
     {
         if (ModelState.IsValid)
         {
@@ -138,9 +138,9 @@ public class AuthController : Controller
 
                 await _signInManager.SignInAsync(user, isPersistent: false);
 
-                if (model.RoleName == "Admin")
+                if (model.RoleName == "admin")
                     return RedirectToAction("Dashboard", "Admin");
-                else if (model.RoleName == "Teacher")
+                else if (model.RoleName == "teacher")
                     return RedirectToAction("Dashboard", "Teacher");
                 else
                     return RedirectToAction("Dashboard", "Student");

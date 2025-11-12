@@ -27,7 +27,7 @@
                 <p class="text-muted">Create your @userRole.ToLower() account</p>
             </div>
 
-            <form method="post" asp-action="Register" asp-controller="Auth">
+            <form method="post" asp-action="PerformRegister" asp-controller="Auth">
 
                 <div asp-validation-summary="All" class="text-danger mb-3"></div>
                 <input type="hidden" asp-for="RoleName" />
