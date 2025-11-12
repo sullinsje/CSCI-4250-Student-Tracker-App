@@ -55,7 +55,7 @@ public class AuthController : Controller
     #endregion
 
     [HttpPost("login")]
-    [ValidateAntiForgeryToken]
+    [ValidateAntiForgeryToken] 
     public async Task<IActionResult> Login(LoginModel model, string? returnUrl = null)
     {
         // Add checks for the Remember Me checkbox data
@@ -81,12 +81,12 @@ public class AuthController : Controller
 
             if (user != null)
             {
-
+                
                 if (await _userManager.IsInRoleAsync(user, "Admin"))
                     return RedirectToAction("Dashboard", "Admin");
                 else if (await _userManager.IsInRoleAsync(user, "Teacher"))
                     return RedirectToAction("Dashboard", "Teacher");
-                else
+                else 
                     return RedirectToAction("Dashboard", "Student");
             }
 
@@ -113,61 +113,35 @@ public class AuthController : Controller
         return View(model);
     }
 
-    [HttpPost("register/{roleName}")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Register(RegisterModel model)
+[HttpPost("register/{roleName}")]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> Register([FromRoute] string roleName, RegisterModel model)
+{
+    if (!ModelState.IsValid) return View(model);
+
+    // normalize role
+    roleName = (roleName ?? model.RoleName ?? "").Trim();
+    roleName = char.ToUpper(roleName[0]) + roleName.Substring(1).ToLower(); // "teacher" -> "Teacher"
+
+    var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+    var result = await _userManager.CreateAsync(user, model.Password);
+
+    if (result.Succeeded)
     {
-        if (ModelState.IsValid)
-        {
-            var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+        if (await _roleManager.RoleExistsAsync(roleName))
+            await _userManager.AddToRoleAsync(user, roleName);
 
-            var result = await _userManager.CreateAsync(user, model.Password);
+        await _signInManager.SignInAsync(user, isPersistent: false);
 
-            if (result.Succeeded)
-            {
-                if (await _roleManager.RoleExistsAsync(model.RoleName))
-                {
-                    await _userManager.AddToRoleAsync(user, model.RoleName);
-                }
-                else
-                {
-                    // Log an error if the role doesn't exist, but still redirect user
-                    // (This should be prevented by your seeding logic)
-                    // You might consider deleting the user if role assignment is mandatory.
-                }
-
-                await _signInManager.SignInAsync(user, isPersistent: false);
-
-                if (model.RoleName == "Admin")
-                    return RedirectToAction("Dashboard", "Admin");
-                else if (model.RoleName == "Teacher")
-                    return RedirectToAction("Dashboard", "Teacher");
-                else
-                    return RedirectToAction("Dashboard", "Student");
-            }
-
-            foreach (var error in result.Errors)
-            {
-                ModelState.AddModelError(string.Empty, error.Description);
-            }
-        }
-
-        return View(model);
-    }
-
-    public async Task<IActionResult> Logout()
-    {
-        return View();
-    }
-
-    [HttpPost("logout")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> PerformLogout()
-    {
-        await _signInManager.SignOutAsync();
+        var roles = await _userManager.GetRolesAsync(user);
+        if (roles.Contains("Admin"))   return RedirectToAction("Dashboard", "Admin");
+        if (roles.Contains("Teacher")) return RedirectToAction("Dashboard", "Teacher");
+        if (roles.Contains("Student")) return RedirectToAction("Dashboard", "Student");
         return RedirectToAction("Index", "Home");
     }
 
-
+    foreach (var e in result.Errors) ModelState.AddModelError(string.Empty, e.Description);
+    return View(model);
+}
     #endregion
 }
