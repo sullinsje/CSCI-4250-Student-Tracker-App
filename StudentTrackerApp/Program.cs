@@ -21,25 +21,33 @@ builder.Services.AddCors(options =>
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<IStudentRepository, DbStudentRepository>();
-builder.Services.AddScoped<IUserRepository, DbUserRepository>();
+builder.Services.AddScoped<IAttendanceRepository, DbAttendanceRepository>();
 
-// DbContext Configuration
+// --- BEGIN CHANGES ---
+
+// 1. Unified DbContext Configuration: This line now registers the single ApplicationDbContext 
+// which handles ALL database tables (Identity and application data).
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(
     builder.Configuration.GetConnectionString("DefaultConnection"))
 );
 
-// Identity DbContext Configuration
-builder.Services.AddDbContext<ApplicationIdentityDbContext>(options =>
-        options.UseSqlite(
-            builder.Configuration.GetConnectionString("DefaultConnection"))
-);
+// 2. REMOVE the separate ApplicationIdentityDbContext registration:
+// // Identity DbContext Configuration
+// builder.Services.AddDbContext<ApplicationIdentityDbContext>(options =>
+//         options.UseSqlite(
+//             builder.Configuration.GetConnectionString("DefaultConnection"))
+// );
 
+// 3. Update Identity to use the unified ApplicationDbContext:
 builder.Services
     .AddDefaultIdentity<ApplicationUser>(
         options => options.SignIn.RequireConfirmedAccount = false)
     .AddRoles<IdentityRole>()
-    .AddEntityFrameworkStores<ApplicationIdentityDbContext>();
+    // The Identity framework now uses ApplicationDbContext as its store
+    .AddEntityFrameworkStores<ApplicationDbContext>(); 
+
+// --- END CHANGES ---
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApiDocument();

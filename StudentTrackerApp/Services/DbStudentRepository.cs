@@ -14,7 +14,10 @@ public class DbStudentRepository : IStudentRepository
 
     public async Task<ICollection<Student>> ReadAllAsync()
     {
-        return await _db.Students.ToListAsync();
+        // Include the AttendanceRecords navigation property for completeness
+        return await _db.Students
+            .Include(s => s.AttendanceRecords)
+            .ToListAsync();
     }
 
     public async Task<Student> CreateAsync(Student newStudent)
@@ -26,18 +29,27 @@ public class DbStudentRepository : IStudentRepository
 
     public async Task<Student?> ReadAsync(int id)
     {
-        return await _db.Students.FindAsync(id);
+        // Use the primary key property Id
+        return await _db.Students
+            .Include(s => s.AttendanceRecords)
+            .FirstOrDefaultAsync(s => s.Id == id);
     }
 
 
     public async Task UpdateAsync(int oldId, Student updatedStudent)
     {
+        // Retrieve the existing entity using the correct Id property
         var studentToUpdate = await ReadAsync(oldId);
+        
         if (studentToUpdate != null)
         {
-            studentToUpdate.name = updatedStudent.name;
-            studentToUpdate.latitude = updatedStudent.latitude;
-            studentToUpdate.longitude = updatedStudent.longitude;
+            // FIX: Accessing the Name property using PascalCase
+            studentToUpdate.Name = updatedStudent.Name; 
+            
+            // Note: Since UserId is a Foreign Key to the Identity system, 
+            // it typically should not be updated here.
+            
+            _db.Students.Update(studentToUpdate);
             await _db.SaveChangesAsync();
         }
 

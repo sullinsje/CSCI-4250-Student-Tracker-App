@@ -1,10 +1,9 @@
-using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using StudentTrackerApp.Services;
 using StudentTrackerApp.Models.Entities;
 using StudentTrackerApp.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using System.Threading.Tasks;
 
 namespace StudentTrackerApp.Controllers;
 
@@ -12,18 +11,22 @@ namespace StudentTrackerApp.Controllers;
 public class AuthController : Controller
 {
     private readonly SignInManager<ApplicationUser> _signInManager;
-    private readonly UserManager<ApplicationUser> _userManager; // Often useful too
-    private readonly RoleManager<IdentityRole> _roleManager; // For role checks
+    private readonly UserManager<ApplicationUser> _userManager; 
+    private readonly RoleManager<IdentityRole> _roleManager;
+    // Inject the unified DbContext to handle application data (Student)
+    private readonly ApplicationDbContext _context; 
 
     // Dependency Injection via constructor
     public AuthController(
         SignInManager<ApplicationUser> signInManager,
         UserManager<ApplicationUser> userManager,
-        RoleManager<IdentityRole> roleManager)
+        RoleManager<IdentityRole> roleManager,
+        ApplicationDbContext context)
     {
         _signInManager = signInManager;
         _userManager = userManager;
         _roleManager = roleManager;
+        _context = context; 
     }
 
     #region Get Login Page
@@ -32,8 +35,8 @@ public class AuthController : Controller
     public IActionResult StudentLogin(string? returnUrl = null)
     {
         ViewData["ReturnUrl"] = returnUrl;
-        ViewData["UserRole"] = "Student"; // Used for view logic or messaging
-        return View("Login"); // Load the generic Login.cshtml view
+        ViewData["UserRole"] = "Student";
+        return View("Login"); 
     }
 
     [HttpGet("login/teacher")]
@@ -41,7 +44,7 @@ public class AuthController : Controller
     {
         ViewData["ReturnUrl"] = returnUrl;
         ViewData["UserRole"] = "Teacher";
-        return View("Login"); // Load the generic Login.cshtml view
+        return View("Login"); 
     }
 
     [HttpGet("login/admin")]
@@ -49,7 +52,7 @@ public class AuthController : Controller
     {
         ViewData["ReturnUrl"] = returnUrl;
         ViewData["UserRole"] = "Admin";
-        return View("Login"); // Load the generic Login.cshtml view
+        return View("Login");
     }
 
     #endregion
@@ -65,13 +68,13 @@ public class AuthController : Controller
         {
             // If validation fails, return to the view with errors
             ViewBag.Error = "Invalid credentials format.";
-            return View(model); // Assumes you're using a Razor View called Login
+            return View("Login", model); 
         }
 
         var result = await _signInManager.PasswordSignInAsync(
             model.Email,
             model.Password,
-            isPersistent: isPersistent, // Use the Remember Me value
+            isPersistent: isPersistent,
             lockoutOnFailure: true);
 
         if (result.Succeeded)
@@ -94,7 +97,7 @@ public class AuthController : Controller
         }
 
         ViewBag.Error = "Invalid Student ID or Password.";
-        return View(model);
+        return View("Login", model);
     }
 
     #region Register
@@ -110,7 +113,7 @@ public class AuthController : Controller
         var model = new RegisterModel { RoleName = roleName };
         ViewData["Title"] = $"{char.ToUpper(roleName[0]) + roleName.Substring(1)} Registration";
 
-        return View(model);
+        return View("Register", model);
     }
 
     [HttpPost]
@@ -119,28 +122,54 @@ public class AuthController : Controller
     {
         if (ModelState.IsValid)
         {
-            var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+            // --- FIX APPLIED HERE ---
+            // 1. Create ApplicationUser and assign the Name property
+            var user = new ApplicationUser 
+            { 
+                UserName = model.Email, 
+                Email = model.Email,
+                Name = model.Name // <--- CRITICAL: ASSIGN THE NAME TO THE APPLICATION USER
+            };
 
             var result = await _userManager.CreateAsync(user, model.Password);
 
             if (result.Succeeded)
             {
-                if (await _roleManager.RoleExistsAsync(model.RoleName))
+                string role = model.RoleName.ToLower();
+
+                if (await _roleManager.RoleExistsAsync(role))
                 {
-                    await _userManager.AddToRoleAsync(user, model.RoleName);
+                    await _userManager.AddToRoleAsync(user, role);
+
+                    // --- CRITICAL LOGIC: ONLY CREATE STUDENT RECORD IF ROLE IS 'STUDENT' ---
+                    if (role == "student")
+                    {
+                        // The student's name is saved here AND in the ApplicationUser record (AspNetUsers)
+                        var student = new Student
+                        {
+                            Name = model.Name, 
+                            UserId = user.Id
+                        };
+
+                        _context.Students.Add(student);
+                        await _context.SaveChangesAsync();
+                    }
                 }
                 else
                 {
-                    // Log an error if the role doesn't exist, but still redirect user
-                    // (This should be prevented by your seeding logic)
-                    // You might consider deleting the user if role assignment is mandatory.
+                    // Handle missing role case
+                    ModelState.AddModelError(string.Empty, $"Role '{model.RoleName}' does not exist. Please contact support.");
+                    // Clean up the created user since role assignment failed
+                    await _userManager.DeleteAsync(user); 
+                    return View("Register", model);
                 }
 
                 await _signInManager.SignInAsync(user, isPersistent: false);
 
-                if (model.RoleName == "admin")
+                // Redirect based on the assigned role
+                if (role == "admin")
                     return RedirectToAction("Dashboard", "Admin");
-                else if (model.RoleName == "teacher")
+                else if (role == "teacher")
                     return RedirectToAction("Dashboard", "Teacher");
                 else
                     return RedirectToAction("Dashboard", "Student");
@@ -152,9 +181,10 @@ public class AuthController : Controller
             }
         }
 
-        return View(model);
+        // Return to the Register view if ModelState is invalid or Identity creation fails
+        return View("Register", model);
     }
-
+    
     public async Task<IActionResult> Logout()
     {
         return View();
