@@ -1,10 +1,12 @@
-
 using System.ComponentModel.DataAnnotations;
 
 namespace StudentTrackerApp.Models
 {
     public class RegisterModel
     {
+        [Required]
+        public string Name { get; set; } = string.Empty; // Added: Used for Student.Name and potentially for other user roles.
+
         [Required]
         [EmailAddress]
         public string Email { get; set; } = string.Empty;
@@ -22,4 +24,3 @@ namespace StudentTrackerApp.Models
         public string RoleName { get; set; } = string.Empty;
     }
 }
-

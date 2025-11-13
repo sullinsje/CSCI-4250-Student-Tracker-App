@@ -3,12 +3,13 @@ using Microsoft.AspNetCore.Mvc;
 using StudentTrackerApp.Services;
 using StudentTrackerApp.Models.Entities;
 using Microsoft.AspNetCore.Authorization;
+
 namespace StudentTracker.Controllers;
 
 
 [Route("api/[controller]")]
 [ApiController]
-// [Authorize]
+[Authorize] // Uncomment this once authorization is fully implemented for API endpoints
 public class StudentAPIController : ControllerBase
 {
     private readonly IStudentRepository _studentRepo;
@@ -25,10 +26,16 @@ public class StudentAPIController : ControllerBase
     }
 
     [HttpPost("create")]
-    public async Task<IActionResult> CreateStudent([FromForm] Student newStudent)
+    public async Task<IActionResult> CreateStudent([FromBody] Student newStudent)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
         await _studentRepo.CreateAsync(newStudent);
-        return CreatedAtAction("Get", new { id = newStudent.id }, newStudent);
+        
+        return CreatedAtAction(nameof(Get), new { id = newStudent.Id }, newStudent);
     }
 
     [HttpGet("{id}")]
@@ -37,23 +44,35 @@ public class StudentAPIController : ControllerBase
         var student = await _studentRepo.ReadAsync(id);
         if (student == null)
         {
-            return NotFound();
+            return NotFound($"Student with ID {id} not found.");
         }
         return Ok(student);
     }
 
     [HttpPut("update")]
-    public async Task<IActionResult> Put([FromForm] Student student)
+    public async Task<IActionResult> Put([FromBody] Student student)
     {
-        await _studentRepo.UpdateAsync(student.id, student);
+        if (student.Id == 0)
+        {
+            return BadRequest("Student ID is required for update operation.");
+        }
+
+        await _studentRepo.UpdateAsync(student.Id, student);
+        
         return NoContent();
     }
 
     [HttpDelete("delete/{id}")]
     public async Task<IActionResult> Delete(int id)
     {
-        await _studentRepo.DeleteAsync(id);
-        return NoContent(); // 204 as per HTTP specification
-    }
+        var student = await _studentRepo.ReadAsync(id);
+        if (student == null)
+        {
+            return NotFound($"Student with ID {id} not found for deletion."); 
+        }
 
+        await _studentRepo.DeleteAsync(id);
+        
+        return NoContent(); 
+    }
 }
