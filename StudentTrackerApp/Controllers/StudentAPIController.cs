@@ -77,7 +77,7 @@ public class StudentAPIController : ControllerBase
     }
     
     [HttpPost("attendanceRecord/add")]
-    public async Task<IActionResult> Post([FromForm] AttendanceVM model)
+    public async Task<IActionResult> AddAttendanceRecord([FromForm] AttendanceVM model)
     {
         var attendanceRecord = new AttendanceRecord
         {

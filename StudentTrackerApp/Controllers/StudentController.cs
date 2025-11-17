@@ -1,31 +1,53 @@
 using System.Diagnostics;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.EntityFrameworkCore;
 using StudentTrackerApp.Models;
+using StudentTrackerApp.Services;
 
 namespace StudentTrackerApp.Controllers;
 
 [Authorize(Roles = "Student")]
 public class StudentController : Controller
 {
-    private readonly ILogger<StudentController> _logger;
-
-    public StudentController(ILogger<StudentController> logger)
+    private readonly ApplicationDbContext _db;
+    
+    public StudentController(ApplicationDbContext db)
     {
-        _logger = logger;
+        _db = db;
     }
 
-    public IActionResult Student()
+    public async Task<IActionResult> Student()
     {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var student = await _db.Students
+            .FirstOrDefaultAsync(s => s.UserId == userId);
+
+        if (student == null)
+        {
+            return NotFound("Student not found");
+        }
+
+        ViewData["CurrentStudentId"] = student.Id;
         return View();
     }
 
-    public IActionResult AttendanceHistory()
+    public async Task<IActionResult> AttendanceHistory()
     {
-        var sampleAttendance = new List<Attendance>();
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var student = await _db.Students
+            .FirstOrDefaultAsync(s => s.UserId == userId);
 
-        return View(sampleAttendance);
+        if (student == null)
+        {
+            return NotFound("Student not found");
+        }
+
+        ViewData["CurrentStudentId"] = student.Id;
+
+        return View();
     }
 
 

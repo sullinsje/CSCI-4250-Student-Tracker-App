@@ -23,13 +23,20 @@
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             }
-            
+
             <div class="clock-card">
                 <!-- Hidden form that passes the location -->
-                <form id="geoForm" asp-controller="Student" asp-action="RecordAttendance" method="post">
-                    <input type="hidden" id="latitude" name="latitude" />
-                    <input type="hidden" id="longitude" name="longitude" />
-                    <input type="hidden" id="clockType" name="clockType" value="in" />
+                <form id="geoForm" asp-controller="StudentAPI" asp-action="AddAttendanceRecord" method="post">
+                    <input type="hidden" id="studentId" name="StudentId" value="@ViewData["CurrentStudentId"]" />
+
+                    <input type="hidden" id="latitude" name="ClockInLatitude" />
+
+                    <input type="hidden" id="longitude" name="ClockInLongitude" />
+
+                    <input type="hidden" id="date" name="Date" />
+
+                    <input type="hidden" id="clockType" name="ClockType" value="in" />
+
                 </form>
 
                 <div class="row g-4 mb-4">
@@ -94,7 +101,7 @@
             background: white;
             border-radius: 20px;
             padding: 3rem;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
         }
 
         .action-card {
@@ -109,7 +116,7 @@
 
         .action-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
 
         .clock-in-card:hover {
@@ -145,7 +152,7 @@
 
         .action-btn:hover {
             transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
 
         .btn-outline-primary,
@@ -186,16 +193,15 @@
 }
 
 @section Scripts {
-    <script src="~/js/cookie-test.js"></script>
     <script>
         function showStatus(message, type = 'info') {
             const statusDiv = document.getElementById('locationStatus');
             const statusMessage = document.getElementById('statusMessage');
-            
+
             statusDiv.className = `alert alert-${type} mt-4`;
             statusMessage.textContent = message;
             statusDiv.style.display = 'block';
-            
+
             // Hide after 5 seconds
             setTimeout(() => {
                 statusDiv.style.display = 'none';
@@ -232,6 +238,7 @@
         function success(position) {
             const latitude = position.coords.latitude;
             const longitude = position.coords.longitude;
+            const dateOnlyString = getCurrentDateString();
 
             // Prints location to dev tools
             console.log('Latitude is ' + latitude, 'Longitude is ' + longitude);
@@ -239,13 +246,21 @@
             // Fill the values in the geoForm form
             document.getElementById('latitude').value = latitude;
             document.getElementById('longitude').value = longitude;
+            document.getElementById('date').value = dateOnlyString;
+
+            const studentIdInput = document.getElementById('studentId');
+            if (!studentIdInput || !studentIdInput.value) {
+                showStatus('Error: Student ID is missing from the page. Cannot clock in.', 'danger');
+                console.error("StudentId input is null or empty.");
+                return;
+            }
 
             // Show success message
             showStatus(`Location retrieved: ${latitude.toFixed(6)}, ${longitude.toFixed(6)}`, 'success');
 
             // Submit the form after a brief delay
             setTimeout(() => {
-                document.getElementById('geoForm').submit();
+                postAttendance();;
             }, 1000);
         }
 
@@ -253,5 +268,50 @@
             showStatus('Unable to retrieve your location. Please check your location permissions.', 'danger');
             console.error('Geolocation error:', err);
         }
+
+        function getCurrentDateString() {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        /**
+         * Submits the form data asynchronously using the Fetch API 
+         * and prevents page navigation.
+         */
+        async function postAttendance() {
+            const form = document.getElementById('geoForm');
+            const formData = new FormData(form); 
+
+            const submitUrl = form.action;
+
+            try {
+                const response = await fetch(submitUrl, {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (response.ok) {
+                    const isClockIn = document.getElementById('clockType').value === 'in';
+                    const successMsg = isClockIn
+                        ? 'Clock In Successful! Record added.'
+                        : 'Clock Out Succesful!';
+
+                    showStatus(successMsg, 'success');
+                } else {
+                    const errorText = await response.text();
+                    showStatus(`Submission Failed! Error: ${response.status} - ${errorText.substring(0, 100)}...`, 'danger');
+                    console.error('API Error:', response.status, errorText);
+                }
+
+            } catch (networkError) {
+                // Handle network issues (e.g., no internet connection)
+                showStatus('Network error occurred. Could not reach the server.', 'danger');
+                console.error('Fetch Network Error:', networkError);
+            }
+        }
+
     </script>
 }
