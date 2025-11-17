@@ -14,7 +14,6 @@ public class DbStudentRepository : IStudentRepository
 
     public async Task<ICollection<Student>> ReadAllAsync()
     {
-        // Include the AttendanceRecords navigation property for completeness
         return await _db.Students
             .Include(s => s.AttendanceRecords)
             .ToListAsync();
@@ -29,10 +28,15 @@ public class DbStudentRepository : IStudentRepository
 
     public async Task<Student?> ReadAsync(int id)
     {
-        // Use the primary key property Id
-        return await _db.Students
-            .Include(s => s.AttendanceRecords)
-            .FirstOrDefaultAsync(s => s.Id == id);
+        var student = await _db.Students.FindAsync(id);
+        if (student != null)
+        {
+            _db.Entry(student)
+                .Collection(s => s.AttendanceRecords)
+                .Load();
+        }
+
+        return student;
     }
 
 
@@ -63,6 +67,24 @@ public class DbStudentRepository : IStudentRepository
             _db.Students.Remove(studentToDelete);
             await _db.SaveChangesAsync();
         }
+    }
+
+    public async Task<AttendanceRecord> CreateAttendanceRecordAsync(int studentId, AttendanceRecord attendanceRecord)
+    {
+        var student = await _db.Students
+            .Include(s => s.AttendanceRecords)
+            .FirstOrDefaultAsync(s => s.Id == studentId);
+
+        if (student == null)
+        {
+            throw new System.Exception($"Book with ID {studentId} not found.");
+        }
+
+        student.AttendanceRecords.Add(attendanceRecord);
+
+        await _db.SaveChangesAsync();
+
+        return attendanceRecord;
     }
     
 }

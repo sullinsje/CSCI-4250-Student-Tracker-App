@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace StudentTrackerApp.Models.Entities;
 
 public class AttendanceRecord
@@ -7,5 +9,6 @@ public class AttendanceRecord
     public DateOnly Date { get; set; }
     public double ClockInLatitude { get; set; }
     public double ClockInLongitude { get; set; }
+    [JsonIgnore]
     public Student Student { get; set; } = null!; 
 }

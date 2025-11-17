@@ -9,7 +9,7 @@ namespace StudentTracker.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize] // Uncomment this once authorization is fully implemented for API endpoints
+[Authorize] // Uncomment this once attendanceRecordization is fully implemented for API endpoints
 public class StudentAPIController : ControllerBase
 {
     private readonly IStudentRepository _studentRepo;
@@ -38,7 +38,7 @@ public class StudentAPIController : ControllerBase
         return CreatedAtAction(nameof(Get), new { id = newStudent.Id }, newStudent);
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("one/{id}")]
     public async Task<IActionResult> Get(int id)
     {
         var student = await _studentRepo.ReadAsync(id);
@@ -68,11 +68,47 @@ public class StudentAPIController : ControllerBase
         var student = await _studentRepo.ReadAsync(id);
         if (student == null)
         {
-            return NotFound($"Student with ID {id} not found for deletion."); 
+            return NotFound($"Student with ID {id} not found for deletion.");
         }
 
         await _studentRepo.DeleteAsync(id);
-        
-        return NoContent(); 
+
+        return NoContent();
     }
+    
+    [HttpPost("attendanceRecord/add")]
+    public async Task<IActionResult> Post([FromForm] AttendanceVM model)
+    {
+        var attendanceRecord = new AttendanceRecord
+        {
+            Id = model.Id,
+            StudentId = model.StudentId,
+            Date = model.Date,
+            ClockInLatitude = model.ClockInLatitude,
+            ClockInLongitude = model.ClockInLongitude
+        };
+
+        await _studentRepo.CreateAttendanceRecordAsync(model.StudentId, attendanceRecord);
+
+        var attendanceRecordDto = new
+        {
+            id = model.Id,
+            studentId = model.StudentId,
+            date = model.Date,
+            clockInLatitude = model.ClockInLatitude,
+            clockInLongitude = model.ClockInLongitude
+        };
+
+        return Ok(attendanceRecordDto);
+    }    
+    
+}
+
+public class AttendanceVM
+{
+    public int Id { get; set; }
+    public int StudentId { get; set; } 
+    public DateOnly Date { get; set; }
+    public double ClockInLatitude { get; set; }
+    public double ClockInLongitude { get; set; }
 }
