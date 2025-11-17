@@ -1,6 +1,6 @@
-@model List<StudentTrackerApp.Models.Attendance>
 @{
     ViewData["Title"] = "Attendance History";
+    var studentId = ViewData["CurrentStudentId"];
 }
 
 <div class="container py-5">
@@ -29,57 +29,27 @@
                             <tr>
                                 <th scope="col"><i class="bi bi-person-badge me-2"></i>Student ID</th>
                                 <th scope="col"><i class="bi bi-calendar-event me-2"></i>Date</th>
-                                <th scope="col"><i class="bi bi-clock me-2"></i>Clock-In Time</th>
                                 <th scope="col"><i class="bi bi-geo-alt me-2"></i>Location</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            @if (Model != null && Model.Any())
-                            {
-                                @foreach (var attendance in Model)
-                                {
-                                    <tr>
-                                        <td class="fw-semibold">@attendance.StudentId</td>
-                                        <td>@attendance.Date.ToString("MMM dd, yyyy")</td>
-                                        <td>@attendance.ClockInTime.ToString(@"hh\:mm\:ss")</td>
-                                        <td>
-                                            <a href="https://www.google.com/maps?q=@attendance.Latitude,@attendance.Longitude" 
-                                               target="_blank" 
-                                               class="text-decoration-none"
-                                               title="View on Google Maps">
-                                                <i class="bi bi-pin-map-fill me-1"></i>@attendance.Location
-                                            </a>
-                                        </td>
-                                    </tr>
-                                }
-                            }
-                            else
-                            {
-                                <tr class="empty-row">
-                                    <td colspan="4" class="text-center text-muted py-5">
-                                        <i class="bi bi-inbox fs-1 d-block mb-3"></i>
-                                        <p class="mb-0">No attendance records yet. Clock in to start tracking your attendance!</p>
-                                    </td>
-                                </tr>
-                            }
+                        <tbody id="attendanceTableBody">
+                        <!--- JS will populate this element after the fetch request -->
+                            <tr class="empty-row">
+                                <td colspan="3" class="text-center text-muted py-5">
+                                    <i class="bi bi-inbox fs-1 d-block mb-3"></i>
+                                    <p class="mb-0">Loading attendance records...</p>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
-
-                @if (Model != null && Model.Any())
-                {
-                    <div class="table-footer">
-                        <div class="text-muted">
-                            <i class="bi bi-info-circle me-2"></i>Total Records: <strong>@Model.Count</strong>
-                        </div>
-                    </div>
-                }
             </div>
         </div>
     </div>
 </div>
 
 @section Styles {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
         body {
             background: linear-gradient(135deg, #4a90e2 0%, #2c5aa0 100%);
@@ -89,7 +59,7 @@
         .table-card {
             background: white;
             border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
             overflow: hidden;
         }
 
@@ -148,7 +118,89 @@
         .btn-light:hover {
             background-color: #f8f9fa;
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
     </style>
+}
+
+@section Scripts {
+    <script>
+        /**
+         * Fetches attendance records for the current student and populates the table.
+         */
+        async function getAttendance() {
+            const studentId = '@studentId'; 
+            
+            const tableBody = document.getElementById('attendanceTableBody'); 
+
+            if (!tableBody) {
+                console.error("Critical Error: attendanceTableBody not found.");
+                return; 
+            }
+            
+            tableBody.innerHTML = `<tr><td colspan="4" class="text-center text-muted py-5">
+                                        <i class="bi bi-hourglass-split fs-1 d-block mb-3"></i>
+                                        <p class="mb-0">Loading attendance records...</p>
+                                    </td></tr>`;
+
+            if (!studentId || studentId === '0' || studentId === 'null') {
+                 tableBody.innerHTML = `<tr><td colspan="3" class="text-center text-danger py-5">
+                                            Error: Student ID not found or is invalid. Value received: <b>${studentId}</b>
+                                        </td></tr>`;
+                 console.error("Student ID is invalid or missing:", studentId);
+                return;
+            }
+
+            const apiUrl = `http://localhost:5013/api/StudentAPI/one/${studentId}`;
+
+            try {
+                const response = await fetch(apiUrl);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('API Error Response:', errorText);
+                    throw new Error(`API Error! Status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                const records = data.attendanceRecords;
+                
+                tableBody.innerHTML = ''; 
+
+                if (Array.isArray(records) && records.length > 0) {
+                    records.forEach(record => {
+                        
+                        const dateOnly = record.date ? new Date(record.date).toLocaleDateString() : 'N/A';
+                        
+                        const row = `
+                            <tr>
+                                <td>${record.studentId || 'N/A'}</td>
+                                <td>${dateOnly}</td>
+                                <td>
+                                    Lat: ${record.clockInLatitude ? record.clockInLatitude.toFixed(4) : 'N/A'} 
+                                    / Long: ${record.clockInLongitude ? record.clockInLongitude.toFixed(4) : 'N/A'}
+                                </td>
+                            </tr>
+                        `;
+                        tableBody.innerHTML += row;
+                    });
+                } else {
+                     tableBody.innerHTML = `<tr><td colspan="3" class="text-center text-muted py-5">
+                                            <i class="bi bi-inbox fs-1 d-block mb-3"></i>
+                                            <p class="mb-0">No attendance records found for student ID: <b>${studentId}</b></p>
+                                        </td></tr>`;
+                }
+
+            } catch (error) {
+                console.error('Fetch Error:', error);
+                 tableBody.innerHTML = `<tr><td colspan="3" class="text-center text-danger py-5">
+                                            <i class="bi bi-exclamation-triangle fs-1 d-block mb-3"></i>
+                                            <p class="mb-0">Failed to load records. Check console for error details (network or API response error).</p>
+                                        </td></tr>`;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', getAttendance);
+    </script>
 }
