@@ -1,4 +1,4 @@
-@model IEnumerable<StudentTrackerApp.Models.Attendance>
+@model IEnumerable<StudentTrackerApp.Models.Entities.AttendanceRecord>
 @{
     ViewData["Title"] = "Attendance History";
 }
@@ -21,24 +21,25 @@
                             <thead>
                                 <tr>
                                     <th>Date</th>
-                                    <th>Clock In Time</th>
                                     <th>Location (Lat, Long)</th>
+                                    <th>In/Out</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach (var record in Model)
                                 {
+                                    
                                     <tr>
                                         <td>@record.Date.ToString("MMMM dd, yyyy")</td>
-                                        <td>@record.ClockInTime.ToString(@"hh\:mm\:ss")</td>
                                         <td>
-                                            <a href="https://www.google.com/maps?q=@record.Latitude,@record.Longitude"
-                                               target="_blank"
-                                               class="text-decoration-none"
-                                               title="View on Google Maps">
-                                                <span class="badge bg-danger text-white"><i class="bi bi-pin-map-fill me-1"></i>@record.Location</span>
+                                            <a href="https://www.google.com/maps?q=@record.ClockInLatitude,@record.ClockInLongitude"
+                                                target="_blank" class="text-decoration-none" title="View on Google Maps">
+                                                <span class="badge bg-danger text-white"><i
+                                                        class="bi bi-pin-map-fill me-1"></i>@record.ClockInLatitude,
+                                                    @record.ClockInLongitude</span>
                                             </a>
                                         </td>
+                                        <td>@((@record.ClockType) ? "In" : "Out")</td>
                                     </tr>
                                 }
                             </tbody>
@@ -73,7 +74,7 @@
             background: white;
             border-radius: 20px;
             padding: 2rem;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
         }
 
         thead {

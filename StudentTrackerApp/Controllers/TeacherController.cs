@@ -42,14 +42,14 @@ public class TeacherController : Controller
         var records = await _attendanceRepo.ReadAllByStudentAsync(id);
 
         // Map entity AttendanceRecord -> view model StudentTrackerApp.Models.Attendance
-        var model = records.Select(r => new Attendance
+        var model = records.Select(r => new AttendanceRecord
         {
             Id = r.Id,
-            StudentId = r.StudentId.ToString(),
-            Date = r.Date.ToDateTime(TimeOnly.MinValue),
-            ClockInTime = TimeSpan.Zero,
-            Latitude = r.ClockInLatitude,
-            Longitude = r.ClockInLongitude
+            StudentId = r.StudentId,
+            Date = r.Date,
+            ClockInLatitude = r.ClockInLatitude,
+            ClockInLongitude = r.ClockInLongitude,
+            ClockType = r.ClockType
         }).ToList();
 
         // Return the view named exactly as the file: "AttendaceHistory"
