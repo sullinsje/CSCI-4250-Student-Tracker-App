@@ -1,4 +1,4 @@
-@model List<StudentTrackerApp.Models.Attendance>
+@model List<StudentTrackerApp.Models.Entities.AttendanceHistory>
 @{
     ViewData["Title"] = "Attendance History";
 }
@@ -40,14 +40,15 @@
                                 {
                                     <tr>
                                         <td class="fw-semibold">@attendance.StudentId</td>
-                                        <td>@attendance.Date.ToString("MMM dd, yyyy")</td>
+                                        <td>@attendance.ClockInTime.ToString("MMM dd, yyyy")</td>
                                         <td>@attendance.ClockInTime.ToString(@"hh\:mm\:ss")</td>
                                         <td>
-                                            <a href="https://www.google.com/maps?q=@attendance.Latitude,@attendance.Longitude" 
+                                            <a href="https://www.google.com/maps?q=@attendance.ClockInLatitude,@attendance.ClockInLongitude" 
                                                target="_blank" 
                                                class="text-decoration-none"
                                                title="View on Google Maps">
-                                                <i class="bi bi-pin-map-fill me-1"></i>@attendance.Location
+                                               <i class="bi bi-pin-map-fill me-1"></i>
+                                               @attendance.ClockInLatitude, @attendance.ClockInLongitude
                                             </a>
                                         </td>
                                     </tr>

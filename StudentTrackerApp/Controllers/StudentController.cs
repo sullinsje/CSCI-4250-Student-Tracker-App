@@ -1,17 +1,24 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Identity;
 using StudentTrackerApp.Models;
+using StudentTrackerApp.Models.Entities;
+using StudentTrackerApp.Services;
 
 namespace StudentTrackerApp.Controllers;
 
 public class StudentController : Controller
 {
     private readonly ILogger<StudentController> _logger;
+    private readonly ApplicationDbContext _db;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public StudentController(ILogger<StudentController> logger)
+    public StudentController(ILogger<StudentController> logger, ApplicationDbContext db, UserManager<ApplicationUser> userManager)
     {
         _logger = logger;
+        _db = db;
+        _userManager = userManager;
     }
 
     public IActionResult Student()
@@ -21,9 +28,22 @@ public class StudentController : Controller
 
     public IActionResult AttendanceHistory()
     {
-     var sampleAttendance = new List<Attendance>();
+        var userId = _userManager.GetUserId(User);
+
+        var student = _db.Students
+            .FirstOrDefault(s => s.IdentityUserId == userId);
         
-        return View(sampleAttendance);
+        if (student == null)
+        {
+            return NotFound();
+        }
+
+        var records = _db.AttendanceHistory
+            .Where(a => a.StudentId == student.id)
+            .OrderByDescending(a => a.ClockInTime)
+            .ToList();
+
+        return View(records);
     }
     
 
@@ -67,30 +87,21 @@ public class StudentController : Controller
 
      // POST: Student/RecordAttendance
         [HttpPost]
-        public IActionResult RecordAttendance(double latitude, double longitude, string clockType)
+        public IActionResult ClockIn([FromBody] LocationData data)
         {
-            // TODO: Save the attendance record to database
-            // For now, just log it
-            var studentId = "12345"; // TODO: Get from session/authentication
-            var currentTime = DateTime.Now;
+            var record = new AttendanceHistory
+            {
+                ClockInLatitude = data.Latitude,
+                ClockInLongitude = data.Longitude,
+                ClockInTime = DateOnly.FromDateTime(DateTime.Now)
+            };
 
-            Console.WriteLine($"Student {studentId} clocked {clockType} at {currentTime}");
-            Console.WriteLine($"Location: {latitude}, {longitude}");
+            _db.AttendanceHistory.Add(record);
+            _db.SaveChanges();
 
-            // TODO: Save to database
-            // var attendance = new Attendance
-            // {
-            //     StudentId = studentId,
-            //     Date = currentTime.Date,
-            //     ClockInTime = currentTime.TimeOfDay,
-            //     Latitude = latitude,
-            //     Longitude = longitude
-            // };
-            // Save attendance to database
-
-            TempData["SuccessMessage"] = $"Successfully clocked {clockType}!";
-            return RedirectToAction("Student");
+            return Ok();
         }
+        
     public IActionResult Error()
     {
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });

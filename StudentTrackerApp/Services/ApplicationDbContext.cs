@@ -9,4 +9,5 @@ public class ApplicationDbContext : DbContext
     {
     }
     public DbSet<Student> Students => Set<Student>();
+    public DbSet<AttendanceHistory> AttendanceHistory => Set<AttendanceHistory>();
 }

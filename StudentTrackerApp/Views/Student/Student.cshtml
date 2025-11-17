@@ -203,13 +203,11 @@
         }
 
         function clockInAndLocate() {
-            document.getElementById('clockType').value = 'in';
             showStatus('Getting your location...', 'info');
             getLocation();
         }
 
         function clockOutAndLocate() {
-            document.getElementById('clockType').value = 'out';
             showStatus('Getting your location...', 'info');
             getLocation();
         }
@@ -239,6 +237,20 @@
             // Fill the values in the geoForm form
             document.getElementById('latitude').value = latitude;
             document.getElementById('longitude').value = longitude;
+
+            fetch ('/Student/ClockIn', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ latitude: latitude, longitude: longitude })
+            }).then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json
+            })
+
 
             // Show success message
             showStatus(`Location retrieved: ${latitude.toFixed(6)}, ${longitude.toFixed(6)}`, 'success');
