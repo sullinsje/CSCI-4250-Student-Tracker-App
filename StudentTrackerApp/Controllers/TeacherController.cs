@@ -1,6 +1,11 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using StudentTrackerApp.Services;
+using StudentTrackerApp.Models;
+using StudentTrackerApp.Models.Entities;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace StudentTracker.Controllers;
 
@@ -9,9 +14,14 @@ public class TeacherController : Controller
 {
     private readonly ILogger<TeacherController> _logger;
 
-    public TeacherController(ILogger<TeacherController> logger)
+    private readonly IAttendanceRepository _attendanceRepo;
+    private readonly IStudentRepository _studentRepo;
+
+    public TeacherController(ILogger<TeacherController> logger, IAttendanceRepository attendanceRepo, IStudentRepository studentRepo)
     {
         _logger = logger;
+        _attendanceRepo = attendanceRepo;
+        _studentRepo = studentRepo;
     }
 
     public IActionResult Teacher()
@@ -19,10 +29,31 @@ public class TeacherController : Controller
         return View();
     }
 
-    public IActionResult StudentList()
+    public async Task<IActionResult> StudentList()
     {
-        //var data = _dbContext.AttendanceRecords.ToList();
-        return View();
+        var students = await _studentRepo.ReadAllAsync();
+        return View(students);
+    }
+
+    // GET: Teacher/AttendaceHistory/5
+    public async Task<IActionResult> AttendaceHistory(int id)
+    {
+        // Read attendance records for the student (entity AttendanceRecord)
+        var records = await _attendanceRepo.ReadAllByStudentAsync(id);
+
+        // Map entity AttendanceRecord -> view model StudentTrackerApp.Models.Attendance
+        var model = records.Select(r => new Attendance
+        {
+            Id = r.Id,
+            StudentId = r.StudentId.ToString(),
+            Date = r.Date.ToDateTime(TimeOnly.MinValue),
+            ClockInTime = TimeSpan.Zero,
+            Latitude = r.ClockInLatitude,
+            Longitude = r.ClockInLongitude
+        }).ToList();
+
+        // Return the view named exactly as the file: "AttendaceHistory"
+        return View("AttendaceHistory", model);
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

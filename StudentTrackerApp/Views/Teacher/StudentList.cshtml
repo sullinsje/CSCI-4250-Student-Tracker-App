@@ -1,55 +1,95 @@
+@model IEnumerable<StudentTrackerApp.Models.Entities.Student>
 @{
     ViewData["Title"] = "All Students";
 }
 
-<div class="container">
+<div class="container py-5">
     <div class="row mb-4">
-        <div class="col text-center">
-            <h1 class="display-4">Student List</h1>
+        <div class="col-12 text-center">
+            <h1 class="display-4 text-white fw-bold mb-2">Student List</h1>
+            <p class="text-white-50">Manage and review student attendance records</p>
         </div>
     </div>
 
     <div class="row">
-        <div class="col">
-            @if (Model != null && Model.Any())
-            {
+        <div class="col-12">
+            <div class="dashboard-card">
                 <div class="table-responsive">
-                    <table class="table table-striped table-hover">
-                        <thead class="thead-dark">
-                            <tr>
-                                <th>Student ID</th>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var student in Model)
-                            {
+                    @if (Model != null && Model.Any())
+                    {
+                        <table class="table table-striped table-hover">
+                            <thead>
                                 <tr>
-                                    <td>@student.StudentId</td>
-                                    <td>@student.Name</td>
-                                    <td>@student.Email</td>
-                                    <td>
-                                        <a asp-controller="Student" 
-                                           asp-action="AttendanceHistory" 
-                                           asp-route-id="@student.StudentId" 
-                                           class="btn btn-primary btn-sm">
-                                            View Attendance
-                                        </a>
-                                    </td>
+                                    <th>Student ID</th>
+                                    <th>Name</th>
+                                    <th>Actions</th>
                                 </tr>
-                            }
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @foreach (var student in Model)
+                                {
+                                    <tr>
+                                        <td>@student.Id</td>
+                                        <td>@student.Name</td>
+                                        <td>
+                                            <a asp-controller="Teacher" 
+                                               asp-action="AttendaceHistory" 
+                                               asp-route-id="@student.Id" 
+                                               class="btn btn-danger btn-sm">
+                                                <i class="bi bi-calendar-check me-1"></i>View Attendance
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info" role="alert">
+                            No students found in the system.
+                        </div>
+                    }
                 </div>
-            }
-            else
-            {
-                <div class="alert alert-info" role="alert">
-                    No students found in the system.
-                </div>
-            }
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col text-center">
+            <a asp-controller="Teacher" asp-action="Dashboard" class="btn btn-light btn-lg">
+                <i class="bi bi-house-door-fill me-2"></i>Return to Dashboard
+            </a>
         </div>
     </div>
 </div>
+
+@section Styles {
+    <style>
+        body {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            min-height: 100vh;
+        }
+
+        .dashboard-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        thead {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: #e74c3c;
+            border: none;
+        }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+    </style>
+}
