@@ -13,7 +13,7 @@ namespace StudentTrackerApp.Controllers;
 public class StudentController : Controller
 {
     private readonly ApplicationDbContext _db;
-    
+
     public StudentController(ApplicationDbContext db)
     {
         _db = db;
@@ -21,6 +21,7 @@ public class StudentController : Controller
 
     public async Task<IActionResult> Student()
     {
+        //getting student id and passing it to viewData
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var student = await _db.Students
             .FirstOrDefaultAsync(s => s.UserId == userId);
@@ -36,6 +37,7 @@ public class StudentController : Controller
 
     public async Task<IActionResult> AttendanceHistory()
     {
+        //getting student id and passing it to viewData
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var student = await _db.Students
             .FirstOrDefaultAsync(s => s.UserId == userId);
