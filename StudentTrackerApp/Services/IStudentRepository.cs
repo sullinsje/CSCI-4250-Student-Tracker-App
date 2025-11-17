@@ -9,5 +9,6 @@ public interface IStudentRepository
     Task<Student?> ReadAsync(int id);
     Task UpdateAsync(int oldId, Student updatedStudent);
     Task DeleteAsync(int id);
+    Task<AttendanceRecord> CreateAttendanceRecordAsync(int studentId, AttendanceRecord attendanceRecord);
     
 }
