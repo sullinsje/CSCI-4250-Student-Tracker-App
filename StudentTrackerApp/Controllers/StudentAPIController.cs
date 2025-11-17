@@ -9,7 +9,7 @@ namespace StudentTracker.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize] // Uncomment this once attendanceRecordization is fully implemented for API endpoints
+[Authorize] 
 public class StudentAPIController : ControllerBase
 {
     private readonly IStudentRepository _studentRepo;
@@ -19,12 +19,14 @@ public class StudentAPIController : ControllerBase
         _studentRepo = studentRepo;
     }
 
+    //gets all students with their attendance data
     [HttpGet("all")]
     public async Task<IActionResult> Get()
     {
         return Ok(await _studentRepo.ReadAllAsync());
     }
 
+    //creates a student from passed in student object
     [HttpPost("create")]
     public async Task<IActionResult> CreateStudent([FromBody] Student newStudent)
     {
@@ -38,6 +40,8 @@ public class StudentAPIController : ControllerBase
         return CreatedAtAction(nameof(Get), new { id = newStudent.Id }, newStudent);
     }
 
+    //updated endpoint for readability
+    //gets single student (includes attendance data)
     [HttpGet("one/{id}")]
     public async Task<IActionResult> Get(int id)
     {
@@ -79,24 +83,28 @@ public class StudentAPIController : ControllerBase
     [HttpPost("attendanceRecord/add")]
     public async Task<IActionResult> AddAttendanceRecord([FromForm] AttendanceVM model)
     {
+        //make attendance record from VM and create it with the Create function
         var attendanceRecord = new AttendanceRecord
         {
             Id = model.Id,
             StudentId = model.StudentId,
             Date = model.Date,
             ClockInLatitude = model.ClockInLatitude,
-            ClockInLongitude = model.ClockInLongitude
+            ClockInLongitude = model.ClockInLongitude,
+            ClockType = model.ClockType
         };
 
         await _studentRepo.CreateAttendanceRecordAsync(model.StudentId, attendanceRecord);
 
+        //make a DTO to return as JSON
         var attendanceRecordDto = new
         {
             id = model.Id,
             studentId = model.StudentId,
             date = model.Date,
             clockInLatitude = model.ClockInLatitude,
-            clockInLongitude = model.ClockInLongitude
+            clockInLongitude = model.ClockInLongitude,
+            clockType = model.ClockType
         };
 
         return Ok(attendanceRecordDto);
@@ -104,6 +112,7 @@ public class StudentAPIController : ControllerBase
     
 }
 
+//view model to ensure received attendance record is formatted correctly
 public class AttendanceVM
 {
     public int Id { get; set; }
@@ -111,4 +120,5 @@ public class AttendanceVM
     public DateOnly Date { get; set; }
     public double ClockInLatitude { get; set; }
     public double ClockInLongitude { get; set; }
+    public bool ClockType {get; set; }
 }

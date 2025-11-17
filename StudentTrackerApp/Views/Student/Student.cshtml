@@ -35,7 +35,7 @@
 
                     <input type="hidden" id="date" name="Date" />
 
-                    <input type="hidden" id="clockType" name="ClockType" value="in" />
+                    <input type="hidden" id="clockType" name="ClockType" value="true" />
 
                 </form>
 
@@ -209,13 +209,13 @@
         }
 
         function clockInAndLocate() {
-            document.getElementById('clockType').value = 'in';
+            document.getElementById('clockType').value = 'true';
             showStatus('Getting your location...', 'info');
             getLocation();
         }
 
         function clockOutAndLocate() {
-            document.getElementById('clockType').value = 'out';
+            document.getElementById('clockType').value = 'false';
             showStatus('Getting your location...', 'info');
             getLocation();
         }
@@ -294,7 +294,7 @@
                 });
 
                 if (response.ok) {
-                    const isClockIn = document.getElementById('clockType').value === 'in';
+                    const isClockIn = document.getElementById('clockType').value === 'true';
                     const successMsg = isClockIn
                         ? 'Clock In Successful! Record added.'
                         : 'Clock Out Succesful!';
