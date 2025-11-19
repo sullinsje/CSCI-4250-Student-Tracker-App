@@ -28,31 +28,25 @@ public class DbStudentRepository : IStudentRepository
 
     public async Task<Student?> ReadAsync(int id)
     {
-        var student = await _db.Students.FindAsync(id);
+        var student = await _db.Students.FindAsync(id); // find instead of ToListAsync()
         if (student != null)
         {
             _db.Entry(student)
                 .Collection(s => s.AttendanceRecords)
-                .Load();
+                .Load(); // Note the collection of student records and load it into student data
         }
 
         return student;
     }
 
-
     public async Task UpdateAsync(int oldId, Student updatedStudent)
     {
-        // Retrieve the existing entity using the correct Id property
         var studentToUpdate = await ReadAsync(oldId);
-        
+
         if (studentToUpdate != null)
         {
-            // FIX: Accessing the Name property using PascalCase
-            studentToUpdate.Name = updatedStudent.Name; 
-            
-            // Note: Since UserId is a Foreign Key to the Identity system, 
-            // it typically should not be updated here.
-            
+            studentToUpdate.Name = updatedStudent.Name; // the scope of project requires only name updates
+
             _db.Students.Update(studentToUpdate);
             await _db.SaveChangesAsync();
         }
@@ -71,20 +65,15 @@ public class DbStudentRepository : IStudentRepository
 
     public async Task<AttendanceRecord> CreateAttendanceRecordAsync(int studentId, AttendanceRecord attendanceRecord)
     {
-        var student = await _db.Students
-            .Include(s => s.AttendanceRecords)
-            .FirstOrDefaultAsync(s => s.Id == studentId);
+        var student = await ReadAsync(studentId);
 
-        if (student == null)
+        if (student != null)
         {
-            throw new System.Exception($"Book with ID {studentId} not found.");
+            student.AttendanceRecords.Add(attendanceRecord);
+            await _db.SaveChangesAsync();
         }
-
-        student.AttendanceRecords.Add(attendanceRecord);
-
-        await _db.SaveChangesAsync();
 
         return attendanceRecord;
     }
-    
+
 }

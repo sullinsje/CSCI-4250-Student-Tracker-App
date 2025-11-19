@@ -1,13 +1,15 @@
 using Microsoft.AspNetCore.Identity;
-using StudentTrackerApp.Models.Entities; // Needed to reference the Student class
+using StudentTrackerApp.Models.Entities; 
 
 namespace StudentTrackerApp.Services;
 
+/// <summary>
+/// allows us to store the Name of users as well as complete the 1 to 1 
+/// relationship between User and Student
+/// </summary>
 public class ApplicationUser : IdentityUser
 {
-    // NEW: Add a required property for the user's full name
     public string Name { get; set; } = string.Empty;
 
-    // Navigation property for the one-to-one relationship with Student.
     public Student? Student { get; set; }
 }

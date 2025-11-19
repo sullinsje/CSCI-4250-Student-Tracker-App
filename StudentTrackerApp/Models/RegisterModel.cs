@@ -2,10 +2,13 @@ using System.ComponentModel.DataAnnotations;
 
 namespace StudentTrackerApp.Models
 {
+    /// <summary>
+    /// ViewModel used for registering in the AuthController
+    /// </summary>
     public class RegisterModel
     {
         [Required]
-        public string Name { get; set; } = string.Empty; // Added: Used for Student.Name and potentially for other user roles.
+        public string Name { get; set; } = string.Empty; // Added: Used for Student.Name and other user roles.
 
         [Required]
         [EmailAddress]

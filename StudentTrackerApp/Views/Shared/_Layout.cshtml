@@ -151,7 +151,7 @@
                             <a class="nav-link" href="/Auth/Login/Teacher">Teacher</a>
                         </li>
                         <li class="nav-item user-info">
-                            @if (SignInManager.IsSignedIn(User))
+                            @if (SignInManager.IsSignedIn(User) && User.Identity != null)
                             {
                                 <span class="nav-link">@User.Identity.Name</span>
 

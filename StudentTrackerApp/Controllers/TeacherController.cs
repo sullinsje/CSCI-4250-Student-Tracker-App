@@ -1,11 +1,7 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StudentTrackerApp.Services;
-using StudentTrackerApp.Models;
 using StudentTrackerApp.Models.Entities;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace StudentTracker.Controllers;
 
@@ -58,18 +54,10 @@ public class TeacherController : Controller
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
 
-    public IActionResult Login()
-    {
-        return View();
-    }
-
     public IActionResult Dashboard()
     {
         return View();
     }
+    
 
-    // public IActionResult Error()
-    // {
-    //     return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-    // }
 }
