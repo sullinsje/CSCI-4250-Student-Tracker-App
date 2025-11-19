@@ -1,0 +1,118 @@
+@using StudentTrackerApp.Models.Entities
+@using StudentTrackerApp.Services
+
+@model ApplicationUser
+@{
+    // The title is dynamically set using the user's name, or defaults if Model is null
+    ViewData["Title"] = $"Details for {Model?.Name ?? "User"}";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+
+            <!-- Header and Back Button -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="display-5 fw-bold text-primary-emphasis">
+                    <i class="bi bi-person-badge-fill me-3"></i>
+                    User Details
+                </h1>
+                <a asp-controller="Admin" asp-action="Index" class="btn btn-outline-secondary" title="Back to User List">
+                    <i class="bi bi-arrow-left me-2"></i>Back to List
+                </a>
+            </div>
+
+            <!-- User Detail Card -->
+            @if (Model != null)
+            {
+                <div class="card shadow-lg border-0 details-card">
+                    <!-- Card Header with User's Name -->
+                    <div class="card-header bg-primary text-white p-4 d-flex justify-content-between align-items-center rounded-top-2">
+                        <h4 class="mb-0 fw-semibold">@Model.Name</h4>
+                        <span class="badge bg-light text-primary p-2">Account ID: @Model.Id.Substring(0, 8)...</span>
+                    </div>
+                    
+                    <div class="card-body p-4 p-md-5">
+                        
+                        <!-- Details List -->
+                        <dl class="row detail-list">
+                            
+                            <!-- Email -->
+                            <dt class="col-sm-4 text-muted">Email Address:</dt>
+                            <dd class="col-sm-8 fw-medium">
+                                <strong>@Model.Email</strong>
+                            </dd>
+
+                            <hr class="my-3">
+
+                            <!-- Username -->
+                            <dt class="col-sm-4 text-muted">Username (Login):</dt>
+                            <dd class="col-sm-8 fw-medium">@Model.UserName</dd>
+
+                            <hr class="my-3">
+
+                            <!-- Full User ID -->
+                            <dt class="col-sm-4 text-muted">Full User ID:</dt>
+                            <dd class="col-sm-8 text-monospace">@Model.Id</dd>
+                            
+                            <!-- Note: You can add more properties here as needed, like Phone Number, Roles, etc. -->
+                        </dl>
+                        
+                        <!-- Action Buttons -->
+                        <div class="mt-4 pt-4 border-top d-flex justify-content-end gap-3">
+                            <a asp-controller="Admin" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning btn-lg action-btn">
+                                <i class="bi bi-pencil-square me-2"></i>Edit User
+                            </a>
+                            <a asp-controller="Admin" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger btn-lg action-btn">
+                                <i class="bi bi-trash me-2"></i>Delete User
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <!-- Error Message if Model is null (e.g., user not found) -->
+                <div class="alert alert-danger text-center py-5 shadow-lg">
+                    <h3 class="fw-bold mb-3"><i class="bi bi-exclamation-octagon-fill me-2"></i>User Not Found</h3>
+                    <p class="lead">The requested user could not be loaded or does not exist.</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        .container {
+            max-width: 960px;
+        }
+
+        .details-card {
+            border-radius: 1rem;
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: linear-gradient(90deg, #007bff, #0056b3); /* Primary blue gradient */
+            border-bottom: none;
+        }
+        
+        .detail-list dd {
+            margin-bottom: 0.5rem;
+        }
+
+        .text-monospace {
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #6c757d;
+            word-break: break-all; /* Ensures long IDs wrap */
+        }
+        
+        .action-btn {
+            border-radius: 50px;
+            padding: 0.75rem 1.5rem;
+        }
+    </style>
+}

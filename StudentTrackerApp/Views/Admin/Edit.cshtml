@@ -1,0 +1,133 @@
+@using StudentTrackerApp.Controllers 
+@model UserUpdateDto
+@{
+    ViewData["Title"] = "Edit User";
+    // The UserId is passed from the AdminController's [HttpGet] Edit action via ViewData
+    string userId = ViewData["UserId"]?.ToString() ?? string.Empty;
+    // NEW: Get the list of all available roles for the dropdown
+    var allRoles = ViewData["AllRoles"] as ICollection<string> ?? new List<string>();
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+
+            <!-- Header and Back Button -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="display-4 fw-bold text-primary-emphasis">
+                    <i class="bi bi-pencil-square me-3"></i>
+                    @ViewData["Title"]
+                </h1>
+                <a asp-controller="Admin" asp-action="Index" class="btn btn-outline-secondary" title="Back to List">
+                    <i class="bi bi-arrow-left me-2"></i>Back to User List
+                </a>
+            </div>
+
+            <!-- Form Card -->
+            <div class="card shadow-lg border-0">
+                
+                <div class="card-header bg-warning text-dark p-4 rounded-top-2">
+                    <h4 class="mb-0 fw-semibold">
+                        Editing User ID: 
+                        <span class="badge bg-dark text-warning ms-2 p-2 fw-normal">
+                            @userId.Substring(0, 8)...
+                        </span>
+                    </h4>
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+
+                    <!-- Form starts here. Notice the asp-route-id to include the user's ID in the POST URL -->
+                    <form asp-controller="Admin" asp-action="Edit" asp-route-id="@userId" method="post" novalidate>
+                        
+                        <!-- Anti-Forgery Token (Required for POST) -->
+                        @Html.AntiForgeryToken()
+                        
+                        <!-- Validation Summary for server-side errors (like Identity errors) -->
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <!-- Name Field -->
+                        <div class="form-floating mb-4">
+                            <input asp-for="Name" class="form-control" placeholder="Full Name" />
+                            <label asp-for="Name" class="form-label">Full Name</label>
+                            <span asp-validation-for="Name" class="text-danger small"></span>
+                        </div>
+                        
+                        <!-- NEW ROLE FIELD (Dropdown List) -->
+                        <div class="form-floating mb-4">
+                            <select asp-for="RoleName" class="form-select">
+                                <option value="" disabled>-- Select a Role --</option>
+                                @foreach (var role in allRoles.OrderBy(r => r))
+                                {
+                                    // Use Model.RoleName to pre-select the user's current role
+                                    <option value="@role" selected="@(Model.RoleName == role)">@role</option>
+                                }
+                            </select>
+                            <label asp-for="RoleName" class="form-label">User Role</label>
+                            <span asp-validation-for="RoleName" class="text-danger small"></span>
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end pt-3 border-top">
+                            <a asp-controller="Admin" asp-action="Index" class="btn btn-outline-secondary btn-lg">
+                                <i class="bi bi-x-circle me-2"></i>
+                                Cancel
+                            </a>
+                            <button type="submit" class="btn btn-warning btn-lg update-btn">
+                                <i class="bi bi-floppy-fill me-2"></i>
+                                Save Changes
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        // This partial view enables client-side validation
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+
+@section Styles {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        .container {
+            max-width: 960px;
+        }
+
+        .card.shadow-lg {
+            border-radius: 1rem;
+        }
+
+        .btn-lg {
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+        }
+
+        .btn-outline-secondary {
+            border-radius: 50px;
+        }
+
+        .update-btn {
+            color: #212529; /* Dark text for warning button */
+            transition: all 0.2s ease;
+        }
+        
+        .update-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(255, 193, 7, 0.4);
+        }
+
+        .form-floating > .form-control:not(:placeholder-shown) ~ label,
+        .form-floating > .form-select:not(.text-muted) ~ label { /* Added .form-select selector */
+            opacity: .65;
+            transform: scale(.85) translateY(-.5rem) translateX(.15rem);
+        }
+    </style>
+}

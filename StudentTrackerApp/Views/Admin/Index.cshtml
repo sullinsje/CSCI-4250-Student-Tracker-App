@@ -1,0 +1,163 @@
+@using StudentTrackerApp.Models.Entities
+@using StudentTrackerApp.Services
+
+@model ICollection<ApplicationUser>
+@{
+    ViewData["Title"] = "User Management Dashboard";
+}
+
+<div class="container py-5">
+    <h1 class="display-4 fw-bold mb-5 text-primary-emphasis">
+        <i class="bi bi-people me-3"></i>@ViewData["Title"]
+    </h1>
+
+    @* --- FEEDBACK MESSAGES (TempData) --- *@
+    @{
+        var successMessage = TempData["SuccessMessage"] as string;
+        var errorMessage = TempData["ErrorMessage"] as string;
+    }
+
+    @if (!string.IsNullOrEmpty(successMessage))
+    {
+        <div class="alert alert-success alert-dismissible fade show mb-4 shadow-sm" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>@successMessage
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger alert-dismissible fade show mb-4 shadow-sm" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>@errorMessage
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @* --- 1. CREATE USER CARD --- *@
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card shadow-lg border-0 bg-primary-subtle create-card">
+                <div class="card-body p-4 d-flex align-items-center justify-content-between">
+                    <div>
+                        <h2 class="card-title mb-1 text-primary fw-bold">Add New User</h2>
+                        <p class="card-text text-primary-emphasis">Quickly register a new teacher or admin account.</p>
+                    </div>
+                    <a asp-controller="Admin" asp-action="Create" class="btn btn-primary btn-lg create-btn shadow-sm">
+                        <i class="bi bi-person-plus-fill me-2"></i> Create New User
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* --- 2. USERS TABLE (READ ALL) --- *@
+    <div class="card shadow-lg border-0">
+        <div class="card-header bg-white border-bottom py-3">
+            <h4 class="mb-0 fw-semibold text-secondary-emphasis">Registered Users (@Model.Count())</h4>
+        </div>
+        <div class="card-body p-4">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 user-table">
+                    <thead class="bg-light">
+                        <tr>
+                            <th scope="col" class="py-3">Name</th>
+                            <th scope="col" class="py-3">Email</th>
+                            <th scope="col" class="py-3">User ID</th>
+                            <th scope="col" class="py-3 text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var user in Model)
+                            {
+                                <tr>
+                                    <td class="align-middle fw-medium">@user.Name</td>
+                                    <td class="align-middle text-muted">@user.Email</td>
+                                    <td class="align-middle text-monospace small">@user.Id.Substring(0, 8)...</td>
+                                    <td class="align-middle text-end">
+                                        <div class="btn-group" role="group">
+                                            <a asp-controller="Admin" asp-action="Details" asp-route-id="@user.Id" class="btn btn-outline-info btn-sm action-icon-btn" title="View Details">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a asp-controller="Admin" asp-action="Edit" asp-route-id="@user.Id" class="btn btn-outline-warning btn-sm action-icon-btn" title="Edit User">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <a asp-controller="Admin" asp-action="Delete" asp-route-id="@user.Id" class="btn btn-outline-danger btn-sm action-icon-btn" title="Delete User">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="4" class="text-center text-muted py-5">
+                                    <i class="bi bi-exclamation-circle fs-3 d-block mb-2"></i>
+                                    No users found in the system.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        /* General body and container styling */
+        .container {
+            max-width: 1200px;
+        }
+
+        /* Card System Styling */
+        .create-card {
+            border-radius: 1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .create-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .create-btn {
+            border-radius: 50px;
+            padding: 0.75rem 2rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .card.shadow-lg {
+            border-radius: 1rem;
+        }
+
+        /* Table Styling */
+        .user-table th {
+            font-weight: 700;
+            color: #495057;
+        }
+
+        .user-table tbody tr:last-child {
+            border-bottom: none;
+        }
+        
+        /* Action Buttons */
+        .action-icon-btn {
+            border-radius: 0.5rem;
+            margin-right: 5px;
+        }
+        
+        .action-icon-btn:last-child {
+            margin-right: 0;
+        }
+
+        .text-monospace {
+            font-family: 'Consolas', 'Courier New', monospace;
+        }
+    </style>
+}

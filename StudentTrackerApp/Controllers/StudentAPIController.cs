@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using StudentTrackerApp.Services;
 using StudentTrackerApp.Models.Entities;
@@ -53,6 +52,7 @@ public class StudentAPIController : ControllerBase
         return Ok(student);
     }
 
+    // updates the POSTed student
     [HttpPut("update")]
     public async Task<IActionResult> Put([FromBody] Student student)
     {
@@ -66,6 +66,7 @@ public class StudentAPIController : ControllerBase
         return NoContent();
     }
 
+    // deletes single student
     [HttpDelete("delete/{id}")]
     public async Task<IActionResult> Delete(int id)
     {
@@ -80,6 +81,7 @@ public class StudentAPIController : ControllerBase
         return NoContent();
     }
     
+    // add an attendance record to a student (ViewModel contains id to access the student)
     [HttpPost("attendanceRecord/add")]
     public async Task<IActionResult> AddAttendanceRecord([FromForm] AttendanceVM model)
     {

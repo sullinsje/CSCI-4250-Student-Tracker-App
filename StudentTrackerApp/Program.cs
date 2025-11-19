@@ -22,32 +22,18 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<IStudentRepository, DbStudentRepository>();
 builder.Services.AddScoped<IAttendanceRepository, DbAttendanceRepository>();
+builder.Services.AddScoped<IIdentityUserRepository, DbIdentityUserRepository>();
 
-// --- BEGIN CHANGES ---
-
-// 1. Unified DbContext Configuration: This line now registers the single ApplicationDbContext 
-// which handles ALL database tables (Identity and application data).
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(
     builder.Configuration.GetConnectionString("DefaultConnection"))
 );
 
-// 2. REMOVE the separate ApplicationIdentityDbContext registration:
-// // Identity DbContext Configuration
-// builder.Services.AddDbContext<ApplicationIdentityDbContext>(options =>
-//         options.UseSqlite(
-//             builder.Configuration.GetConnectionString("DefaultConnection"))
-// );
-
-// 3. Update Identity to use the unified ApplicationDbContext:
 builder.Services
     .AddDefaultIdentity<ApplicationUser>(
         options => options.SignIn.RequireConfirmedAccount = false)
     .AddRoles<IdentityRole>()
-    // The Identity framework now uses ApplicationDbContext as its store
     .AddEntityFrameworkStores<ApplicationDbContext>(); 
-
-// --- END CHANGES ---
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApiDocument();
@@ -86,6 +72,7 @@ await CreateRoles(app.Services);
 
 app.Run();
 
+// Seed user roles into database
 async Task CreateRoles(IServiceProvider serviceProvider)
 {
     using (var scope = serviceProvider.CreateScope())

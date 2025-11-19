@@ -2,6 +2,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace StudentTrackerApp.Models 
 {
+    /// <summary>
+    /// ViewModel used for logging in within the AuthController
+    /// </summary>
     public class LoginModel
     {
         [Required]

@@ -141,14 +141,14 @@
             }
 
             tableBody.innerHTML = `<tr><td colspan="4" class="text-center text-muted py-5">
-                                            <i class="bi bi-hourglass-split fs-1 d-block mb-3"></i>
-                                            <p class="mb-0">Loading attendance records...</p>
-                                        </td></tr>`;
+                                                    <i class="bi bi-hourglass-split fs-1 d-block mb-3"></i>
+                                                    <p class="mb-0">Loading attendance records...</p>
+                                                </td></tr>`;
 
             if (!studentId || studentId === '0' || studentId === 'null') {
                 tableBody.innerHTML = `<tr><td colspan="4" class="text-center text-danger py-5">
-                                                Error: Student ID not found or is invalid. Value received: <b>${studentId}</b>
-                                            </td></tr>`;
+                                                        Error: Student ID not found or is invalid. Value received: <b>${studentId}</b>
+                                                    </td></tr>`;
                 console.error("Student ID is invalid or missing:", studentId);
                 return;
             }
@@ -176,31 +176,31 @@
                         const dateOnly = record.date ? new Date(record.date).toLocaleDateString() : 'N/A';
                         const clockType = record.clockType ? "In" : 'Out';
                         const row = `
-                                <tr>
-                                    <td>${record.studentId || 'N/A'}</td>
-                                    <td>${dateOnly}</td>
-                                    <td>
-                                        Lat: ${record.clockInLatitude ? record.clockInLatitude.toFixed(4) : 'N/A'} 
-                                        / Long: ${record.clockInLongitude ? record.clockInLongitude.toFixed(4) : 'N/A'}
-                                    </td>
-                                    <td>${clockType}
-                                </tr>
-                            `;
+                                        <tr>
+                                            <td>${record.studentId || 'N/A'}</td>
+                                            <td>${dateOnly}</td>
+                                            <td>
+                                                Lat: ${record.clockInLatitude ? record.clockInLatitude.toFixed(4) : 'N/A'} 
+                                                / Long: ${record.clockInLongitude ? record.clockInLongitude.toFixed(4) : 'N/A'}
+                                            </td>
+                                            <td>${clockType}
+                                        </tr>
+                                    `;
                         tableBody.innerHTML += row;
                     });
                 } else {
                     tableBody.innerHTML = `<tr><td colspan="4" class="text-center text-muted py-5">
-                                                <i class="bi bi-inbox fs-1 d-block mb-3"></i>
-                                                <p class="mb-0">No attendance records found for student ID: <b>${studentId}</b></p>
-                                            </td></tr>`;
+                                                        <i class="bi bi-inbox fs-1 d-block mb-3"></i>
+                                                        <p class="mb-0">No attendance records found...</b></p>
+                                                    </td></tr>`;
                 }
 
             } catch (error) {
                 console.error('Fetch Error:', error);
                 tableBody.innerHTML = `<tr><td colspan="4" class="text-center text-danger py-5">
-                                                <i class="bi bi-exclamation-triangle fs-1 d-block mb-3"></i>
-                                                <p class="mb-0">Failed to load records. Check console for error details (network or API response error).</p>
-                                            </td></tr>`;
+                                                        <i class="bi bi-exclamation-triangle fs-1 d-block mb-3"></i>
+                                                        <p class="mb-0">Failed to load records. Check console for error details (network or API response error).</p>
+                                                    </td></tr>`;
             }
         }
 

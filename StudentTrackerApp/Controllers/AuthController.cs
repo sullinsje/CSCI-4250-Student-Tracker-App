@@ -3,7 +3,6 @@ using StudentTrackerApp.Services;
 using StudentTrackerApp.Models.Entities;
 using StudentTrackerApp.Models;
 using Microsoft.AspNetCore.Identity;
-using System.Threading.Tasks;
 
 namespace StudentTrackerApp.Controllers;
 
@@ -13,10 +12,8 @@ public class AuthController : Controller
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly UserManager<ApplicationUser> _userManager; 
     private readonly RoleManager<IdentityRole> _roleManager;
-    // Inject the unified DbContext to handle application data (Student)
     private readonly ApplicationDbContext _context; 
 
-    // Dependency Injection via constructor
     public AuthController(
         SignInManager<ApplicationUser> signInManager,
         UserManager<ApplicationUser> userManager,
@@ -61,12 +58,10 @@ public class AuthController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(LoginModel model, string? returnUrl = null)
     {
-        // Add checks for the Remember Me checkbox data
-        bool isPersistent = model.RememberMe; // Assuming you add RememberMe to LoginModel
+        bool isPersistent = model.RememberMe;
 
         if (!ModelState.IsValid)
         {
-            // If validation fails, return to the view with errors
             ViewBag.Error = "Invalid credentials format.";
             return View("Login", model); 
         }
@@ -79,14 +74,13 @@ public class AuthController : Controller
 
         if (result.Succeeded)
         {
-            // NEW STEP: Fetch User to check roles for targeted redirection
             var user = await _userManager.FindByEmailAsync(model.Email);
 
             if (user != null)
             {
 
                 if (await _userManager.IsInRoleAsync(user, "Admin"))
-                    return RedirectToAction("Dashboard", "Admin");
+                    return RedirectToAction("Index", "Admin");
                 else if (await _userManager.IsInRoleAsync(user, "Teacher"))
                     return RedirectToAction("Dashboard", "Teacher");
                 else
@@ -122,13 +116,11 @@ public class AuthController : Controller
     {
         if (ModelState.IsValid)
         {
-            // --- FIX APPLIED HERE ---
-            // 1. Create ApplicationUser and assign the Name property
             var user = new ApplicationUser 
             { 
                 UserName = model.Email, 
                 Email = model.Email,
-                Name = model.Name // <--- CRITICAL: ASSIGN THE NAME TO THE APPLICATION USER
+                Name = model.Name 
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);
@@ -141,10 +133,8 @@ public class AuthController : Controller
                 {
                     await _userManager.AddToRoleAsync(user, role);
 
-                    // --- CRITICAL LOGIC: ONLY CREATE STUDENT RECORD IF ROLE IS 'STUDENT' ---
                     if (role == "student")
                     {
-                        // The student's name is saved here AND in the ApplicationUser record (AspNetUsers)
                         var student = new Student
                         {
                             Name = model.Name, 
@@ -157,18 +147,15 @@ public class AuthController : Controller
                 }
                 else
                 {
-                    // Handle missing role case
                     ModelState.AddModelError(string.Empty, $"Role '{model.RoleName}' does not exist. Please contact support.");
-                    // Clean up the created user since role assignment failed
                     await _userManager.DeleteAsync(user); 
                     return View("Register", model);
                 }
 
                 await _signInManager.SignInAsync(user, isPersistent: false);
 
-                // Redirect based on the assigned role
                 if (role == "admin")
-                    return RedirectToAction("Dashboard", "Admin");
+                    return RedirectToAction("Index", "Admin");
                 else if (role == "teacher")
                     return RedirectToAction("Dashboard", "Teacher");
                 else
@@ -181,11 +168,10 @@ public class AuthController : Controller
             }
         }
 
-        // Return to the Register view if ModelState is invalid or Identity creation fails
         return View("Register", model);
     }
     
-    public async Task<IActionResult> Logout()
+    public IActionResult Logout()
     {
         return View();
     }
