@@ -19,6 +19,9 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="NSwag.AspNetCore" Version="14.6.1" />
+    <Content Include="Data\Data.db">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile> </Content>
   </ItemGroup>
 
 </Project>

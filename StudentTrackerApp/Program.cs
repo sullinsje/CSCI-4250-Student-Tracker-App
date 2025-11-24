@@ -6,6 +6,10 @@ var builder = WebApplication.CreateBuilder(args);
     
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
+// CHANGES TO ALLOW APP PUBLISHING
+var rootPath = builder.Environment.ContentRootPath;
+var dbPath = Path.Combine(rootPath, "Data", "Data.db");
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: MyAllowSpecificOrigins,
@@ -24,10 +28,9 @@ builder.Services.AddScoped<IStudentRepository, DbStudentRepository>();
 builder.Services.AddScoped<IAttendanceRepository, DbAttendanceRepository>();
 builder.Services.AddScoped<IIdentityUserRepository, DbIdentityUserRepository>();
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite(
-    builder.Configuration.GetConnectionString("DefaultConnection"))
-);
+builder.Services.AddDbContext<ApplicationDbContext>(options =>{
+    options.UseSqlite($"Data Source={dbPath}");
+});
 
 builder.Services
     .AddDefaultIdentity<ApplicationUser>(
