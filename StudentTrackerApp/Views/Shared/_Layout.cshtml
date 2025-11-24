@@ -130,7 +130,10 @@
 </head>
 
 <body>
-    <header>
+        <!-- Shared layout head/nav/footer used by all pages.
+            Important: Keep the Bootstrap and icon CDN references here so views can rely on them.
+            The SignInManager is injected at the top of this file for conditional nav rendering. -->
+        <header>
         <nav class="navbar navbar-expand-lg navbar-light">
             <div class="container">
                 <a class="navbar-brand" href="/">

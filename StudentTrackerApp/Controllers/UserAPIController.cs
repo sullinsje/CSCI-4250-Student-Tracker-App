@@ -24,6 +24,10 @@ public class UserUpdateDto
 [Route("api/[controller]")]
 [ApiController]
 [Authorize(Roles = "Admin")] 
+/// <summary>
+/// API controller for managing application identity users. Restricted to Admin role.
+/// Provides CRUD endpoints for users used by administrative clients.
+/// </summary>
 public class UserAPIController : ControllerBase
 {
     private readonly IIdentityUserRepository _userRepo;
@@ -34,6 +38,9 @@ public class UserAPIController : ControllerBase
     }
 
     // READ ALL
+    /// <summary>
+    /// Returns all identity users.
+    /// </summary>
     [HttpGet("all")]
     public async Task<IActionResult> Get()
     {
@@ -42,6 +49,10 @@ public class UserAPIController : ControllerBase
     }
 
     // READ ONE
+    /// <summary>
+    /// Returns a single user by id.
+    /// </summary>
+    /// <param name="id">User id to fetch.</param>
     [HttpGet("one/{id}")]
     public async Task<IActionResult> Get(string id)
     {
@@ -56,6 +67,10 @@ public class UserAPIController : ControllerBase
     }
 
     // CREATE 
+    /// <summary>
+    /// Creates a new identity user using provided DTO.
+    /// </summary>
+    /// <param name="dto">User creation DTO.</param>
     [HttpPost("create")]
     public async Task<IActionResult> Create([FromBody] UserCreationDto dto)
     {
@@ -85,6 +100,11 @@ public class UserAPIController : ControllerBase
     }
 
     // EDIT
+    /// <summary>
+    /// Updates a user's editable fields.
+    /// </summary>
+    /// <param name="id">User id to update.</param>
+    /// <param name="dto">Update DTO.</param>
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(string id, [FromBody] UserUpdateDto dto)
     {
@@ -109,6 +129,10 @@ public class UserAPIController : ControllerBase
     }
 
     // DELETE
+    /// <summary>
+    /// Deletes a user by id.
+    /// </summary>
+    /// <param name="id">User id to delete.</param>
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(string id)
     {

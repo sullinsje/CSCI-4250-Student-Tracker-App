@@ -6,6 +6,10 @@ using Microsoft.AspNetCore.Authorization;
 namespace StudentTracker.Controllers;
 
 
+/// <summary>
+/// REST API controller exposing student CRUD and attendance endpoints.
+/// These endpoints are intended for authenticated clients.
+/// </summary>
 [Route("api/[controller]")]
 [ApiController]
 [Authorize] 
@@ -19,6 +23,9 @@ public class StudentAPIController : ControllerBase
     }
 
     //gets all students with their attendance data
+    /// <summary>
+    /// Returns all students with attendance data.
+    /// </summary>
     [HttpGet("all")]
     public async Task<IActionResult> Get()
     {
@@ -26,6 +33,10 @@ public class StudentAPIController : ControllerBase
     }
 
     //creates a student from passed in student object
+    /// <summary>
+    /// Creates a new student entity.
+    /// </summary>
+    /// <param name="newStudent">Student to create.</param>
     [HttpPost("create")]
     public async Task<IActionResult> CreateStudent([FromBody] Student newStudent)
     {
@@ -41,6 +52,10 @@ public class StudentAPIController : ControllerBase
 
     //updated endpoint for readability
     //gets single student (includes attendance data)
+    /// <summary>
+    /// Returns a single student by id (includes attendance data).
+    /// </summary>
+    /// <param name="id">Student id.</param>
     [HttpGet("one/{id}")]
     public async Task<IActionResult> Get(int id)
     {
@@ -53,6 +68,10 @@ public class StudentAPIController : ControllerBase
     }
 
     // updates the POSTed student
+    /// <summary>
+    /// Updates a posted student entity.
+    /// </summary>
+    /// <param name="student">Student payload with updated values.</param>
     [HttpPut("update")]
     public async Task<IActionResult> Put([FromBody] Student student)
     {
@@ -67,6 +86,10 @@ public class StudentAPIController : ControllerBase
     }
 
     // deletes single student
+    /// <summary>
+    /// Deletes a student by id.
+    /// </summary>
+    /// <param name="id">Student id to delete.</param>
     [HttpDelete("delete/{id}")]
     public async Task<IActionResult> Delete(int id)
     {
@@ -82,6 +105,10 @@ public class StudentAPIController : ControllerBase
     }
     
     // add an attendance record to a student (ViewModel contains id to access the student)
+    /// <summary>
+    /// Adds an attendance record to a student.
+    /// </summary>
+    /// <param name="model">Attendance view-model received from form-data.</param>
     [HttpPost("attendanceRecord/add")]
     public async Task<IActionResult> AddAttendanceRecord([FromForm] AttendanceVM model)
     {

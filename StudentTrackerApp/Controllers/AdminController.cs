@@ -23,6 +23,10 @@ public class UserUpdateDto
 }
 
 
+/// <summary>
+/// Controller for site administrators to manage application users and roles.
+/// Contains CRUD operations for creating, updating, and deleting users.
+/// </summary>
 [Authorize(Roles = "Admin")] // Ensures only users with the "Admin" role can access any action
 public class AdminController : Controller
 {
@@ -35,6 +39,9 @@ public class AdminController : Controller
 
     // READ ALL (Index)
     // GET: /Admin/Index
+    /// <summary>
+    /// Lists all users in the application with management links.
+    /// </summary>
     public async Task<IActionResult> Index()
     {
         ViewData["Title"] = "Manage Users Dashboard";
@@ -45,6 +52,10 @@ public class AdminController : Controller
 
     // READ ONE (User Details)
     // GET: /Admin/Details/{id}
+    /// <summary>
+    /// Shows details for a single user by id.
+    /// </summary>
+    /// <param name="id">The identity user id.</param>
     [HttpGet]
     public async Task<IActionResult> Details(string id)
     {
@@ -62,6 +73,9 @@ public class AdminController : Controller
     
     // CREATE OPERATIONS
     // GET: /Admin/Create
+    /// <summary>
+    /// Displays a form to create a new application user.
+    /// </summary>
     [HttpGet]
     public async Task<IActionResult> Create()
     {
@@ -73,6 +87,10 @@ public class AdminController : Controller
     }
 
     // POST: /Admin/Create
+    /// <summary>
+    /// Processes the posted create-user form and attempts to create a user with a password and role.
+    /// </summary>
+    /// <param name="dto">Data transfer object carrying user creation fields.</param>
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(UserCreationDto dto)
@@ -133,6 +151,10 @@ public class AdminController : Controller
     // UPDATE OPERATIONS
 
     // GET: /Admin/Edit/{id}
+    /// <summary>
+    /// Displays the edit form for a user.
+    /// </summary>
+    /// <param name="id">User id to edit.</param>
     [HttpGet]
     public async Task<IActionResult> Edit(string id)
     {
@@ -161,6 +183,11 @@ public class AdminController : Controller
     }
 
     // POST: /Admin/Edit/{id}
+    /// <summary>
+    /// Handles the posted user updates and role assignment.
+    /// </summary>
+    /// <param name="id">Id of the user to update.</param>
+    /// <param name="dto">Update DTO with the new values.</param>
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(string id, UserUpdateDto dto)
@@ -212,6 +239,10 @@ public class AdminController : Controller
     // DELETE OPERATIONS
 
     // GET: /Admin/Delete/{id} (Confirmation View)
+    /// <summary>
+    /// Confirmation view for deleting a user.
+    /// </summary>
+    /// <param name="id">User id to delete.</param>
     [HttpGet]
     public async Task<IActionResult> Delete(string id)
     {
@@ -228,7 +259,11 @@ public class AdminController : Controller
     }
 
     // POST: /Admin/DeleteConfirmed/{id} (Actual Deletion)
-    [HttpPost, ActionName("Delete")] 
+    /// <summary>
+    /// Executes the deletion of a user after confirmation.
+    /// </summary>
+    /// <param name="id">User id to delete.</param>
+    [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(string id)
     {

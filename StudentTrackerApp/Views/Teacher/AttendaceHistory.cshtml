@@ -13,7 +13,10 @@
 
     <div class="row">
         <div class="col-12">
-            <div class="dashboard-card">
+              <!-- View: Teacher Attendance History
+                  Purpose: Shows attendance records for a selected student. Model is IEnumerable<StudentTrackerApp.Models.Attendance>
+                  Note: Location links open Google Maps in a new tab. -->
+              <div class="dashboard-card">
                 @if (Model != null && Model.Any())
                 {
                     <div class="table-responsive">

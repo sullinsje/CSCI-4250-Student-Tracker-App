@@ -7,6 +7,10 @@ using Microsoft.AspNetCore.Identity;
 namespace StudentTrackerApp.Controllers;
 
 [Route("[controller]")]
+/// <summary>
+/// Authentication controller responsible for login, registration and logout flows
+/// for students, teachers and admins.
+/// </summary>
 public class AuthController : Controller
 {
     private readonly SignInManager<ApplicationUser> _signInManager;
@@ -14,6 +18,9 @@ public class AuthController : Controller
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly ApplicationDbContext _context; 
 
+    /// <summary>
+    /// Creates a new <see cref="AuthController"/>.
+    /// </summary>
     public AuthController(
         SignInManager<ApplicationUser> signInManager,
         UserManager<ApplicationUser> userManager,
@@ -28,6 +35,10 @@ public class AuthController : Controller
 
     #region Get Login Page
 
+    /// <summary>
+    /// Shows the login page pre-configured for a student role.
+    /// </summary>
+    /// <param name="returnUrl">Optional return URL after login.</param>
     [HttpGet("login/student")]
     public IActionResult StudentLogin(string? returnUrl = null)
     {
@@ -36,6 +47,10 @@ public class AuthController : Controller
         return View("Login"); 
     }
 
+    /// <summary>
+    /// Shows the login page pre-configured for a teacher role.
+    /// </summary>
+    /// <param name="returnUrl">Optional return URL after login.</param>
     [HttpGet("login/teacher")]
     public IActionResult TeacherLogin(string? returnUrl = null)
     {
@@ -44,6 +59,10 @@ public class AuthController : Controller
         return View("Login"); 
     }
 
+    /// <summary>
+    /// Shows the login page pre-configured for an admin role.
+    /// </summary>
+    /// <param name="returnUrl">Optional return URL after login.</param>
     [HttpGet("login/admin")]
     public IActionResult AdminLogin(string? returnUrl = null)
     {
@@ -54,6 +73,12 @@ public class AuthController : Controller
 
     #endregion
 
+    /// <summary>
+    /// Processes posted login credentials and redirects users by role.
+    /// </summary>
+    /// <param name="model">LoginModel containing email and password.</param>
+    /// <param name="returnUrl">Optional return URL.</param>
+    /// <returns>Redirects to the appropriate area (Admin/Teacher/Student) on success, otherwise returns the login view.</returns>
     [HttpPost("login")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(LoginModel model, string? returnUrl = null)
@@ -96,6 +121,10 @@ public class AuthController : Controller
 
     #region Register
 
+    /// <summary>
+    /// Shows a registration form for the specified role (student/teacher/admin).
+    /// </summary>
+    /// <param name="roleName">Role to register (student/teacher/admin).</param>
     [HttpGet("register/{roleName}")]
     public IActionResult Register(string roleName)
     {
@@ -110,6 +139,11 @@ public class AuthController : Controller
         return View("Register", model);
     }
 
+    /// <summary>
+    /// Performs registration for a new user, assigns role and, when the role is student,
+    /// creates a corresponding Student entity.
+    /// </summary>
+    /// <param name="model">Registration model.</param>
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> PerformRegister(RegisterModel model)
@@ -171,11 +205,17 @@ public class AuthController : Controller
         return View("Register", model);
     }
     
+    /// <summary>
+    /// Shows confirm logout page.
+    /// </summary>
     public IActionResult Logout()
     {
         return View();
     }
 
+    /// <summary>
+    /// Performs sign-out for the current user.
+    /// </summary>
     [HttpPost("logout")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> PerformLogout()
