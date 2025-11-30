@@ -18,7 +18,7 @@ This manual is organized into focused topic files for easier navigation. Select 
 | [03_CODING_STANDARDS.md](03_CODING_STANDARDS.md) | C# code style, naming conventions, and best practices |
 | [04_DEVELOPMENT_STANDARDS.md](04_DEVELOPMENT_STANDARDS.md) | File organization, git workflow, code review process |
 | [05_DATA_DICTIONARY.md](05_DATA_DICTIONARY.md) | Database schema, data models, and relationships |
-| [06_ARCHITECTURE_DESIGN]https://github.com/sullinsje/CSCI-4250-Student-Tracker-App/blob/main/ArchDesign.png
+| [06_ARCHITECTURE_DESIGN] | https://github.com/sullinsje/CSCI-4250-Student-Tracker-App/blob/main/ArchDesign.png
 | [07_TEST_PROCESS.md](07_TEST_PROCESS.md) | Testing strategies, checklists, and implementation |
 | [08_ISSUE_TRACKING.md](08_ISSUE_TRACKING.md) | Issue management, project tools, and communication |
 | [08a project management board] circa 11/30/25 | https://drive.google.com/file/d/12hAxwXabXx9XRXSVgFWf3UALQFnuCNP8/view?usp=sharing
