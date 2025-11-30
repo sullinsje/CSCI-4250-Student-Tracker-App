@@ -21,6 +21,7 @@ This manual is organized into focused topic files for easier navigation. Select 
 | [06_ARCHITECTURE_DESIGN]https://github.com/sullinsje/CSCI-4250-Student-Tracker-App/blob/main/ArchDesign.png
 | [07_TEST_PROCESS.md](07_TEST_PROCESS.md) | Testing strategies, checklists, and implementation |
 | [08_ISSUE_TRACKING.md](08_ISSUE_TRACKING.md) | Issue management, project tools, and communication |
+| [08a project management boar] circa 11/30/25 | https://drive.google.com/file/d/12hAxwXabXx9XRXSVgFWf3UALQFnuCNP8/view?usp=sharing
 | [09_BUILD_DEPLOYMENT.md](09_BUILD_DEPLOYMENT.md) | Build process, deployment procedures, configuration |
 | [10_DESIGN_DECISIONS.md](10_DESIGN_DECISIONS.md) | Rationale behind key architectural choices |
 | [11_TROUBLESHOOTING.md](11_TROUBLESHOOTING.md) | Common issues and solutions organized by category |
