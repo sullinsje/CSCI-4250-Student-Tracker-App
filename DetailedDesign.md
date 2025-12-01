@@ -1,68 +1,51 @@
-# Technical Design Document Template
+# CSCI-4250-Student-Tracker-App | Detailed Design Specification 
 
-## Purpose
-The purpose of this document is to outline the design specifications for new features or systems, ensuring alignment across the development team and stakeholders.
+## Introduction and Context
 
-## Introduction
-Provide an overview of the project, including the background and context necessary to understand the design choices made.
+### Purpose
+The purpose of this document is to serve as the **Detailed Design Specification** for the system, focusing primarily on the **UML Class Design** and the **Entity-Relationship Data Model (ERD)** to guide implementation.
 
-- **Project Name:** `Enter project name`
-- **Document Author:** @mention (to notify the team member responsible)
-- **Date Created:** `>Enter creation date`
-- **Last Updated:** `>Enter last updated date`
-- **Stakeholders:** @mention (tag stakeholders for visibility)
+### Design Objectives
+List the goals and objectives this specific design (the models) aims to achieve, linked back to the functional requirements.
 
-## Objectives
-List the goals and objectives this design aims to achieve. For example:
-
-- [ ] Objective 1: Describe the primary goal of the feature or system.
-- [ ] Objective 2: Outline secondary objectives or considerations.
-
-## Architecture Diagrams
-Include diagrams that illustrate the high-level architecture of the system or feature. Use attachments or links to diagrams stored within NotePlan for easy access.
-
-- **System Overview Diagram:** `Link to diagram`
-- **Component Interaction:** `Link to diagram`
-
-## Design Details
-Detail the design specifications of the system or feature. Use sub-sections for different components as needed.
-
-### Component 1
-- **Description:** Brief description of component.
-- **Responsibilities:** Outline the responsibilities of this component.
-- **Dependencies:** List any dependencies.
-
-### Component 2
-- **Description:** Brief description of component.
-- **Responsibilities:** Outline the responsibilities of this component.
-- **Dependencies:** List any dependencies.
-
-## Implementation Plan
-Outline the steps for implementing the design. Use a task list to track progress.
-* **Step 1:** Description of the first step in implementation.
-* **Step 2:** Description of the subsequent step.
-* **Step 3:** Continue listing steps.
-
-## Testing Strategies
-Describe the testing strategies that will be used to ensure the design meets requirements.
-
-- **Unit Testing:** Describe unit testing plans and the tools to be used.
-- **Integration Testing:** Outline how components will be tested together.
-- **Performance Testing:** Specify the performance benchmarks and testing methods.
-
-## Revision History
-Use a table to keep track of changes made to the document.
-- `>YYYY-MM-DD` - Version 1.0
-	- @mention: Initial draft created.
-- `>YYYY-MM-DD` - Version 1.1 
-	- @mention: Updated component details.
-
-## Comments and Discussions
-Use @mentions and tasks to facilitate discussions and feedback on specific sections of the document.
-
-- [ ] @mention (Request feedback from a specific team member)
-- [ ] Discuss integration points and potential issues.
+* [ ] Objective 1: Describe the primary goal of the feature or system being modeled.
+* [ ] Objective 2: Outline secondary objectives or constraints (e.g., must support CRUD for student entities).
 
 ---
 
-Remember to regularly update this document as the project evolves and to use the commenting features in NotePlan to keep all stakeholders in the loop.
+## Structural Design (UML)
+
+### UML Class Diagram
+
+[Image of UML Class Diagram]
+
+### Key Class Explanation
+Briefly explain the role and primary responsibilities of the most critical classes shown in the diagram.
+* **`Student`:** Role and primary responsibilities 
+* **`AttendanceRecord`:** Role and primary responsibilities 
+
+---
+
+## Data Design (ERD)
+
+### Entity-Relationship Diagram (ERD)
+
+<img width="796" height="816" alt="Screenshot From 2025-11-30 21-05-10" src="https://github.com/user-attachments/assets/ad49cc22-206e-4129-a23b-7a35bf1710da" />
+
+
+### Schema Details
+* **`Students`:** PK (`Id`), FK to `AspNetUsers`, important fields (`Name`, `UserId`).
+* **`AttendanceRecords`:** PK (`Id`), FK to `Students` (`StudentID`), important fields (`Date`, `ClockInLatitude`, `ClockInLongitude`, `ClockType`).
+* **`AspNetUsers`:** PK (`Id`), important fields (`UserName`, `Name`, `Email`, `PasswordHash`).
+* **`AspNetRoles`:** PK (`Id`), important fields (`Name`).
+* **`AspNetUserRoles`:** Join table for `AspNetUsers` and `AspNetRoles`. 
+* **Data Persistence:** Used **SQLite** via **EF Core**
+
+---
+
+## Validation and Review
+
+### Testing Strategy
+Briefly describe the testing strategy focused on validating the models defined above.
+* **Unit Testing:** Focus on verifying the correctness of logic within classes (e.g., methods in `ProgressTrackerService`).
+* **Integration Testing:** Focus on validating the database interactions (CRUD operations) defined by the ERD.
