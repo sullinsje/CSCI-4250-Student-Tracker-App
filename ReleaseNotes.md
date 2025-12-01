@@ -24,7 +24,7 @@ This version is released as a **Self-Contained Deployment** bundle specifically 
 * **Database:** SQLite (Embedded, file-based)
 
 **Deployment Note:**
-The application data is stored in the `Data.db` file within the application folder. To begin tracking, please follow the steps in the [Deployment Guide](#CSCI-4250-Student-Tracker-App/DeploymentGuide.md), which involves running the `LaunchApp.bat` file and navigating to `http://localhost:5013`.
+The application data is stored in the `Data.db` file within the application folder. To begin tracking, please follow the steps in the [Deployment Guide](#https://github.com/sullinsje/CSCI-4250-Student-Tracker-App/blob/main/DeploymentGuide.md), which involves running the `LaunchApp.bat` file and navigating to `http://localhost:5013`.
 
 
 ## Known Limitations
