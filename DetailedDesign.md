@@ -5,24 +5,20 @@
 ### Purpose
 The purpose of this document is to serve as the **Detailed Design Specification** for the system, focusing primarily on the **UML Class Design** and the **Entity-Relationship Data Model (ERD)** to guide implementation.
 
-### Design Objectives
-List the goals and objectives this specific design (the models) aims to achieve, linked back to the functional requirements.
-
-* [ ] Objective 1: Describe the primary goal of the feature or system being modeled.
-* [ ] Objective 2: Outline secondary objectives or constraints (e.g., must support CRUD for student entities).
-
 ---
 
 ## Structural Design (UML)
 
 ### UML Class Diagram
-
-[Image of UML Class Diagram]
+<img width="1627" height="1105" alt="UML" src="https://github.com/user-attachments/assets/96b61ea3-8b17-4df1-abe2-cd34f019cd1b" />
 
 ### Key Class Explanation
-Briefly explain the role and primary responsibilities of the most critical classes shown in the diagram.
-* **`Student`:** Role and primary responsibilities 
-* **`AttendanceRecord`:** Role and primary responsibilities 
+* **`Student`:** Responsible for modelling student records in the database
+* **`AttendanceRecord`:** Responsible for modelling attendance records in the database
+* **`ApplicationUser`:** Responsible for modelling users from the database
+* **`StudentRepository`:** Responsible for methods implementing CRUD functionality for Student models
+* **`AttendanceRepository`:** Responsible for methods implementing create and read functionality for AttendanceRecord models
+* **`IdentityUserRepository`:** Responsible for methods implementing CRUD functionality for Users and Roles
 
 ---
 
@@ -41,11 +37,3 @@ Briefly explain the role and primary responsibilities of the most critical class
 * **`AspNetUserRoles`:** Join table for `AspNetUsers` and `AspNetRoles`. 
 * **Data Persistence:** Used **SQLite** via **EF Core**
 
----
-
-## Validation and Review
-
-### Testing Strategy
-Briefly describe the testing strategy focused on validating the models defined above.
-* **Unit Testing:** Focus on verifying the correctness of logic within classes (e.g., methods in `ProgressTrackerService`).
-* **Integration Testing:** Focus on validating the database interactions (CRUD operations) defined by the ERD.
