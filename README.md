@@ -21,45 +21,15 @@ We have an application that meets the defined MVP, in addition to an admin panel
 
 ## Getting Started
 
-### Developer Dependencies
+### [Developer Manual](https://github.com/sullinsje/CSCI-4250-Student-Tracker-App/tree/main/DEVELOPERS_MANUAL)
 
-* Windows 10+
-* .NET 9.0
-* Microsoft.AspNetCore.Identity.EntityFrameworkCore 9.0.10
-* Microsoft.AspNetCore.Identity.UI 9.0.10
-* Microsoft.EntityFrameworkCore.Design 9.0.10
-* Microsoft.EntityFrameworkCore.Tools 9.0.10
-* Microsoft.EntityFrameworkCore.Sqlite 9.0.10
-* NSwag.AspNetCore 14.6.1
+### [Deployment Guide](https://github.com/sullinsje/CSCI-4250-Student-Tracker-App/blob/main/DeploymentGuide.md)
 
-### Installing
+### [User Manual](https://github.com/sullinsje/CSCI-4250-Student-Tracker-App/blob/main/USERMANUAL.md)
 
-* Download the ZIP from the latest release
-* Extract the application files to location of choice
+### [Authors](https://github.com/sullinsje/CSCI-4250-Student-Tracker-App/blob/main/TeamMembership.md)
 
-### Executing program
-
-Within the Application folder either:
-* Click on ```LaunchApp.bat```
-  * The application should open within the default browser over localhost
-* Click on ```StudentTrackerApp.exe```
-  * Navigate to the terminal window
-  * Click on http://localhost:5013
-  * The application should open within the default browser over localhost
-
-## Authors
-
-Contributors names and contact info
-
-* Jacob Sullins - sullinsje@etsu.edu
-* Jabari Mitchell - mitchelljd3@etsu.edu
-* Lucas Litzenberger - litzenberger@etsu.edu
-* Matthew Williams - williamsme4@etsu.edu
-* Joseph Rutherford - rutherfordjd@etsu.edu
+### [Version History](https://github.com/sullinsje/CSCI-4250-Student-Tracker-App/blob/main/ReleaseNotes.md)
 
 
-## Version History
-
-* 1.0.0
-    * Initial Release
 
